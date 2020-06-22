@@ -1,0 +1,457 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAIN DIALOG DISCARDABLE  0, 0, 385, 236
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Sky Map Generator v1.00 alpha"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Start",IDOK,328,215,50,14,NOT WS_TABSTOP
+    CONTROL         "Tab1",IDC_TAB,"SysTabControl32",TCS_TOOLTIPS | 
+                    WS_TABSTOP,7,7,371,203
+END
+
+IDD_PAGE_GENERAL DIALOGEX 0, 0, 367, 187
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    GROUPBOX        " Orientation ",IDC_STATIC,7,7,53,49
+    CONTROL         "North",IDC_RDB_NORTH,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,16,20,33,10
+    CONTROL         "South",IDC_RDB_SOUTH,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,16,35,35,10
+    GROUPBOX        " Map elements ",IDC_STATIC,68,7,129,173,0,
+                    WS_EX_ACCEPTFILES
+    CONTROL         "Plot Ecliptic",IDC_CHK_PLOT_ECLIPTIC,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,78,20,53,10
+    CONTROL         "Plot Gal. Equator",IDC_CHK_PLOT_GAL_EQUATOR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,78,39,69,10
+    LTEXT           "Dots frequency:",IDC_STATIC,88,62,51,8
+    EDITTEXT        IDC_EDT_DOTS_FREQUENCY,145,60,47,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Max pole distance:",IDC_STATIC,77,80,60,8
+    EDITTEXT        IDC_EDT_MAX_POLE_DISTANCE,145,79,47,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    LTEXT           "Plot Milky Way:",IDC_STATIC,89,103,50,8
+    COMBOBOX        IDC_CMB_PLOT_MILKY_WAY,145,100,48,48,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Ignore pleiade",IDC_CHK_IGNORE_PLEIADE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,121,61,10
+    CONTROL         "Plot meteor radiants",IDC_CHK_PLOT_METEOR_RADIANTS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,87,139,78,10
+    LTEXT           "Radiants text size:",IDC_STATIC,86,157,58,8
+    EDITTEXT        IDC_EDT_RADIANTS_TEXT_SIZE,150,156,40,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    GROUPBOX        " Text ",IDC_STATIC,204,7,156,92
+    LTEXT           "Titles font:",IDC_STATIC,221,20,34,8
+    COMBOBOX        IDC_CMB_TITLES_FONT,261,19,48,51,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Moveable text distance:",IDC_STATIC,214,42,76,8
+    EDITTEXT        IDC_EDT_TEXT_DISTANCE,296,40,40,12,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Plot fixed text",IDC_CHK_PLOT_FIXED_TEXT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,261,63,58,10
+    LTEXT           "Fixed text file:",IDC_STATIC,211,80,44,8
+    EDITTEXT        IDC_EDT_FIXED_TEXT_FILE,261,79,91,12,ES_AUTOHSCROLL
+    GROUPBOX        " Net ",IDC_STATIC,204,104,156,76
+    CONTROL         "Plot net",IDC_CHK_PLOT_NET,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,221,121,40,10
+    LTEXT           "Declination text height:",IDC_STATIC,231,142,73,8
+    EDITTEXT        IDC_EDT_DECLINATION_TEXT_HEIGHT,312,140,40,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Right ascention text height:",IDC_STATIC,217,163,87,8
+    EDITTEXT        IDC_EDT_RIGHT_ASCENTION_TEXT_HEIGHT,312,161,40,12,
+                    ES_AUTOHSCROLL
+END
+
+IDD_PAGE_STARS DIALOG DISCARDABLE  0, 0, 367, 187
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        " General ",IDC_STATIC,7,7,127,173
+    CONTROL         "Plot stars",IDC_CHK_PLOT_STARS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,22,45,10
+    LTEXT           "Magnitude limit:",IDC_STATIC,21,39,50,8
+    EDITTEXT        IDC_EDT_MAGNITUDE_LIMIT,76,37,40,12,ES_AUTOHSCROLL
+    LTEXT           "Diameter function:",IDC_STATIC,13,58,58,8
+    COMBOBOX        IDC_CMB_DIAMETER_FUNCTION,76,55,52,44,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Max star diameter:",IDC_STATIC,13,72,58,8
+    EDITTEXT        IDC_EDT_MAX_STAR_DIAMETER,76,70,40,14,ES_AUTOHSCROLL
+    LTEXT           "Min star diameter:",IDC_STATI,15,90,56,8
+    EDITTEXT        IDC_EDT_MIN_STAR_DIAMETER,76,87,40,14,ES_AUTOHSCROLL
+    CONTROL         "Variable star ring",IDC_CHK_DRAW_VARIABLE_RING,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,109,68,10
+    CONTROL         "Multiple star sign",IDC_CHK_DRAW_MULTIPLE_SIGN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,124,68,10
+    CONTROL         "Draw star frame",IDC_CHK_DRAW_STAR_FRAME,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,143,65,10
+    LTEXT           "Star frame width:",IDC_STATIC,18,161,53,8
+    EDITTEXT        IDC_EDT_STAR_FRAME_WIDTH,76,159,40,12,ES_AUTOHSCROLL
+    GROUPBOX        " Star names ",IDC_STATIC,141,7,219,56
+    CONTROL         "Plot star names",IDC_CHK_PLOT_STAR_NAMES,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,152,20,64,10
+    LTEXT           "Star name height:",IDC_STATIC,244,21,56,8
+    EDITTEXT        IDC_EDT_STAR_NAME_HEIGHT,307,19,40,12,ES_AUTOHSCROLL
+    LTEXT           "Min name magnitude:",IDC_STATIC,232,42,68,8
+    EDITTEXT        IDC_EDT_MIN_NAME_MAGNITUDE,307,40,40,12,ES_AUTOHSCROLL
+    GROUPBOX        " Star designations ",IDC_STATIC,141,66,219,114
+    CONTROL         "Plot Bayer designations",
+                    IDC_CHK_PLOT_BAYER_DESIGNATIONS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,152,81,89,10
+    CONTROL         "Optimize Bayer designations",
+                    IDC_CHK_OPTIMIZE_BAYER_DESIGNATIONS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,252,81,104,10
+    CONTROL         "Plot Flamsteed designations",
+                    IDC_CHK_PLOT_FLAMSTEED_DESIGNATIONS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,152,97,103,10
+    LTEXT           "Variable designations:",IDC_STATIC,184,120,70,8
+    COMBOBOX        IDC_CMB_VARIABLE_DESIGNATIONS,259,118,48,68,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Designation text height:",IDC_STATIC,179,144,75,8
+    EDITTEXT        IDC_EDT_DESIGNATION_TEXT_HEIGHT,259,141,40,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Min magnitude for designation:",IDC_STATIC,157,161,97,8
+    EDITTEXT        IDC_EDT_MIN_MAGNITUDE_FOR_DESIGNATION,259,159,40,13,
+                    ES_AUTOHSCROLL
+END
+
+IDD_PAGE_CONSTELLATIONS DIALOG DISCARDABLE  0, 0, 367, 187
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        " Constellation boundaries ",IDC_STATIC,7,7,191,107
+    CONTROL         "Plot bounds",IDC_CHK_BOUNDS_PLOT,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,20,24,51,10
+    GROUPBOX        " Line style ",IDC_GRP_LINE_STYLE,12,56,75,51
+    CONTROL         "Plot lines",IDC_RDB_BOUNDS_PLOT_LINES,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,18,73,44,10
+    CONTROL         "Plot dots",IDC_RDB_BOUNDS_PLOT_DOTS,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,18,89,43,10
+    GROUPBOX        " Angle style ",IDC_GRP_ANGLE_STYLE,93,21,97,86
+    CONTROL         "Corner",IDC_RDB_BOUNDS_CORNER,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,102,36,37,10
+    CONTROL         "Full line",IDC_RDB_BOUNDS_FULL_LINE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,145,37,39,10
+    LTEXT           "Factor min:",IDC_LBL_CONSTALLATION_BOUDARS_FACTOR_MIN,
+                    117,58,36,8
+    EDITTEXT        IDC_EDT_BOUNDS_FACTOR_MIN,155,56,28,12,ES_AUTOHSCROLL
+    LTEXT           "max:",IDC_LBL_CONSTALLATION_BOUDS_FACTOR_MAX,137,72,16,
+                    8
+    EDITTEXT        IDC_EDT_BOUNDS_FACTOR_MAX,155,70,28,12,ES_AUTOHSCROLL
+    LTEXT           "Angle °:",IDC_LBL_BOUNDS_ANGLE,127,90,26,8
+    EDITTEXT        IDC_EDT_BOUNDS_ANGLE,155,88,28,12,ES_AUTOHSCROLL
+    GROUPBOX        " Star connections ",IDC_STATIC,210,7,150,107
+    CONTROL         "Plot star connections",IDC_CHK_CONNECTION_PLOT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,239,32,82,10
+    LTEXT           "From file:",IDC_STATIC,223,56,29,8
+    EDITTEXT        IDC_EDT_CONNECTION_FROM_FILE,260,54,90,12,ES_AUTOHSCROLL
+    GROUPBOX        " Line style ",IDC_STATIC,219,75,129,30
+    CONTROL         "Solid",IDC_RDB_CONNECTION_SOLID,"Button",
+                    BS_AUTORADIOBUTTON,228,87,31,10
+    CONTROL         "Dots",IDC_RDB_CONNECTION_DOTS,"Button",
+                    BS_AUTORADIOBUTTON,269,87,39,9
+END
+
+IDD_PAGE_OUTPUT DIALOG DISCARDABLE  0, 0, 367, 187
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        " Output options ",IDC_STATIC,7,7,353,173
+    GROUPBOX        " Debug ",IDC_STATIC,15,16,101,79
+    CONTROL         "Plot text frame",IDC_CHK_PLOT_TEXT_FRAME,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,24,34,61,10
+    LTEXT           "Debug region:",IDC_STATIC,23,57,46,8
+    COMBOBOX        IDC_CMB_DEBUG_REGION,23,69,76,55,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        " Map output ",IDC_STATIC,123,16,229,79
+    LTEXT           "Output file name:",IDC_STATIC,197,29,54,8
+    EDITTEXT        IDC_EDT_OUTPUT_FILE_NAME,253,27,91,13,ES_AUTOHSCROLL
+    LTEXT           "Scale factor:",IDC_STATIC,141,73,41,8
+    EDITTEXT        IDC_EDT_SCALE_FACTOR,185,72,30,12,ES_AUTOHSCROLL
+    LTEXT           "Map radius (mm):",IDC_STATIC,247,55,54,8
+    EDITTEXT        IDC_EDT_MAP_RADIUS,305,54,40,12,ES_AUTOHSCROLL
+    LTEXT           "Map border (mm):",IDC_STATIC,245,74,56,8
+    EDITTEXT        IDC_EDT_MAP_BORDER,305,73,40,12,ES_AUTOHSCROLL
+END
+
+IDD_PAGE_NGC DIALOG DISCARDABLE  0, 0, 367, 187
+STYLE DS_CONTROL | WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        " General ",IDC_STATIC,7,7,169,88
+    CONTROL         "Plot NGC objects",IDC_CHK_PLOT_NGC,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,20,70,10
+    CONTROL         "Messier only",IDC_CHK_MESSIER_ONLY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,36,55,10
+    LTEXT           "Designations type:",IDC_STATIC,17,57,59,8
+    COMBOBOX        IDC_CMB_DESIGNATIONS_TYPE,84,54,72,50,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Text height:",IDC_STATIC,37,75,38,8
+    EDITTEXT        IDC_EDT_NAME_TEXT_HEIGHT,83,73,40,12,ES_AUTOHSCROLL
+    GROUPBOX        " Planetary nebulae ",IDC_STATIC,7,98,169,41
+    CONTROL         "Plot plan. nebulae",IDC_CHK_PLOT_PLANETARY_NEBULAE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,109,73,10
+    LTEXT           "Min mag.:",IDC_STATIC,96,109,32,8
+    EDITTEXT        IDC_EDT_MIN_PLANETARY_NEBULAE_MAGNITUDE,134,107,29,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Min diam.:",IDC_STATIC,16,123,33,8
+    EDITTEXT        IDC_EDT_MIN_PLANETARY_NEBULAE_DIAMETER,55,122,31,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Max diam.:",IDC_STATIC,93,123,35,8
+    EDITTEXT        IDC_EDT_MAX_PLANETARY_NEBULAE_DIAMETER,134,122,29,12,
+                    ES_AUTOHSCROLL
+    GROUPBOX        " Nebulae ",IDC_STATIC,7,141,169,39
+    CONTROL         "Plot nebulae",IDC_CHK_PLOT_NEBULAE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,23,150,55,10
+    LTEXT           "Min mag.:",IDC_STATIC,97,150,32,8
+    EDITTEXT        IDC_EDT_MIN_NEBULAE_MAGNITUDE,135,148,29,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Min diam.:",IDC_STATIC,17,164,33,8
+    EDITTEXT        IDC_EDT_MIN_NEBULAE_DIAMETER,56,163,31,12,ES_AUTOHSCROLL
+    LTEXT           "Max diam.:",IDC_STATIC,94,164,35,8
+    EDITTEXT        IDC_EDT_MAX_NEBULAE_DIAMETER,135,163,29,12,
+                    ES_AUTOHSCROLL
+    GROUPBOX        " Galaxies ",IDC_STATIC,189,7,169,43
+    CONTROL         "Plot galaxies",IDC_CHK_PLOT_GALAXIES,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,200,17,55,10
+    LTEXT           "Min mag.:",IDC_STATIC,285,18,32,8
+    EDITTEXT        IDC_EDT_MIN_GALAXY_MAGNITUDE,318,16,29,12,ES_AUTOHSCROLL
+    LTEXT           "Min diam:",IDC_STATIC,207,32,31,8
+    EDITTEXT        IDC_EDT_MIN_GALAXY_DIAMETER,244,30,31,12,ES_AUTOHSCROLL
+    LTEXT           "Max diam.:",IDC_STATIC,282,32,35,8
+    EDITTEXT        IDC_EDT_MAX_GALAXY_DIAMETER,318,32,29,12,ES_AUTOHSCROLL
+    GROUPBOX        " Open clusters ",IDC_STATIC,189,50,169,45
+    CONTROL         "Plot open clusters",IDC_CHK_PLOT_OPEN_CLUSTERS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,200,62,72,10
+    LTEXT           "Min mag.:",IDC_STATIC,280,62,32,8
+    EDITTEXT        IDC_EDT_MIN_OPEN_CLUSTER_MAGNITUDE,318,61,29,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Min diam.:",IDC_STATIC,200,78,33,8
+    EDITTEXT        IDC_EDT_MIN_OPEN_CLUSTER_DIAMETER,239,76,31,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Max diam.:",IDC_STATIC,277,78,35,8
+    EDITTEXT        IDC_EDT_MAX_OPEN_CLUSTER_DIAMETER,318,76,29,12,
+                    ES_AUTOHSCROLL
+    GROUPBOX        " Globular clusters ",IDC_STATIC,189,98,169,42
+    CONTROL         "Plot glob. clusters",IDC_CHK_PLOT_GLOBULAR_CLUSTERS,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,200,110,71,10
+    LTEXT           "Min mag.:",IDC_STATIC,280,110,32,8
+    EDITTEXT        IDC_EDT_MIN_GLOBULAR_CLUSTER_MAGNITUDE,318,107,29,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Min diam.:",IDC_STATIC,200,124,33,8
+    EDITTEXT        IDC_EDT_MIN_GLOBULAR_CLUSTER_DIAMETER,239,122,31,12,
+                    ES_AUTOHSCROLL
+    LTEXT           "Max diam.:",IDC_STATIC,277,124,35,8
+    EDITTEXT        IDC_EDT_MAX_GLOBULAR_CLUSTER_DIAMETER,318,122,29,12,
+                    ES_AUTOHSCROLL
+    GROUPBOX        " X-Ray sources ",IDC_STATIC,189,140,169,40,WS_DISABLED
+    CONTROL         "Plot X-ray sources",IDC_CHK_PLOT_X_RAY,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,200,150,73,10
+    LTEXT           "Min mag.:",IDC_STATIC,280,151,32,8,WS_DISABLED
+    EDITTEXT        IDC_EDT_MIN_X_RAY_MAGNITUDE,318,148,29,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "Min diam.:",IDC_STATIC,200,165,33,8,WS_DISABLED
+    EDITTEXT        IDC_EDT_MIN_X_RAY_DIAMETER,239,163,31,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    LTEXT           "Max diam.:",IDC_STATIC,277,165,35,8,WS_DISABLED
+    EDITTEXT        IDC_EDT_OPEN_X_RAY_DIAMETER,318,163,29,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+END
+
+IDD_LOG DIALOG DISCARDABLE  0, 0, 354, 217
+STYLE DS_MODALFRAME | WS_VISIBLE | WS_CAPTION
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,297,196,50,14
+    LISTBOX         IDC_LST_LOG,7,7,340,183,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_MAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 378
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 229
+        HORZGUIDE, 32
+        HORZGUIDE, 54
+        HORZGUIDE, 73
+    END
+
+    IDD_PAGE_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 360
+        VERTGUIDE, 60
+        VERTGUIDE, 68
+        VERTGUIDE, 204
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 180
+    END
+
+    IDD_PAGE_STARS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 360
+        VERTGUIDE, 18
+        VERTGUIDE, 71
+        VERTGUIDE, 76
+        VERTGUIDE, 152
+        VERTGUIDE, 300
+        VERTGUIDE, 307
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 180
+        HORZGUIDE, 42
+    END
+
+    IDD_PAGE_CONSTELLATIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 360
+        VERTGUIDE, 60
+        VERTGUIDE, 68
+        VERTGUIDE, 198
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 180
+        HORZGUIDE, 56
+        HORZGUIDE, 82
+    END
+
+    IDD_PAGE_OUTPUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 360
+        VERTGUIDE, 60
+        VERTGUIDE, 68
+        VERTGUIDE, 204
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 180
+        HORZGUIDE, 56
+    END
+
+    IDD_PAGE_NGC, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 360
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 180
+    END
+
+    IDD_LOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 347
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 210
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_PAGE_GENERAL DLGINIT
+BEGIN
+    IDC_CMB_TITLES_FONT, 0x403, 6, 0
+0x6954, 0x656d, 0x0073, 
+    IDC_CMB_TITLES_FONT, 0x403, 10, 0
+0x6548, 0x766c, 0x7465, 0x6369, 0x0061, 
+    0
+END
+
+IDD_PAGE_STARS DLGINIT
+BEGIN
+    IDC_CMB_DIAMETER_FUNCTION, 0x403, 7, 0
+0x2866, 0x2978, 0x783d, "\000" 
+    IDC_CMB_DIAMETER_FUNCTION, 0x403, 13, 0
+0x2866, 0x2978, 0x613d, 0x6174, 0x286e, 0x2978, "\000" 
+    IDC_CMB_DIAMETER_FUNCTION, 0x403, 12, 0
+0x2866, 0x2978, 0x653d, 0x7078, 0x7828, 0x0029, 
+    IDC_CMB_VARIABLE_DESIGNATIONS, 0x403, 5, 0
+0x6f4e, 0x656e, "\000" 
+    IDC_CMB_VARIABLE_DESIGNATIONS, 0x403, 9, 0
+0x6f4e, 0x2074, 0x7856, 0x7878, "\000" 
+    IDC_CMB_VARIABLE_DESIGNATIONS, 0x403, 4, 0
+0x6c41, 0x006c, 
+    0
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

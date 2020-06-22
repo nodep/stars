@@ -1,0 +1,56 @@
+  Enjoy Plus!
+  
+ferenc says:
+cao
+Zarko Nikasinovic says:
+cao
+ferenc says:
+imam pitanje u vezi sa VTune-om
+ferenc says:
+skinuo sam ga lai ne znam kako da ga rabim
+ferenc says:
+ako pokrenem program koji VTune-iram u debugu treba mu od prilike do prekosutra ujutro da ga zavrsi, a u release-u vidi samo Win32 API funkcije...
+ferenc says:
+any ideas?
+ferenc says:
+ako si u frci, nije uopste hitno...
+Zarko Nikasinovic says:
+ja ga koristim tako sto napravim novu konfiguraciju baziranu na release-u samo dodam u opcije da generise i debug informacije i da ne optimizuje kod i u linker da ulinkuje te debug informacije
+Zarko Nikasinovic says:
+to na kraju ispadne slicno kao debug ali _DEBUG nije definisan pa dosta MFC f-ja radi samo ono sto mora
+ferenc says:
+hmmm. problem mi je sto u debugu (bez vtune-a) mom programu treba jedno posla sata da istrci... sa VTune-om sam probao i izgleda kao da mu treba mnoooogo vise
+Zarko Nikasinovic says:
+to je i inace tako
+ferenc says:
+probacu da ostavim debug info ali da ukljucim optimizacije
+ferenc says:
+ja sam mislio da ja nesto radim pogresno...
+Zarko Nikasinovic says:
+dakle ako hoce da ti profiler meri performanse kojecega dok program radi mora sve zajedno da radi sporije.
+ferenc says:
+i sta mogu da ocekujem na kraju?  meni treba informacija u kojim funkcijama je proveo najvise vremena...  to bi trebao da mi kaze, jel tako?
+Zarko Nikasinovic says:
+ne taj VTune je jos i dobar ja sam video neke profilere koji uspore par stotina puta
+Zarko Nikasinovic says:
+razdvoji ti po tredovima i kaze ti za svaku f-ju koliko je potrosila cpu vremena i pravog vremena
+Zarko Nikasinovic says:
+imas zajedno sa svim pod f-jama i samo ta f-ja...
+ferenc says:
+to, to!
+Zarko Nikasinovic says:
+mozda bi trebao da mu das neki jednostavnij problem a ne taj koji inace zahteva pola sata (smanji mu kolikcinu ulaznih podataka ako mozes)
+ferenc says:
+hmmmm, pitam se koliko bi to imalo uticaj na vreme koje potrosi u tim funkcijama...  ali probacu i to u svakom slucaju...
+ferenc says:
+verovatno bi upalilio
+Zarko Nikasinovic says:
+ako imas vise tredova ovaj ce ti ih prikazati prema hendlu sto je malo bezveze..
+ferenc says:
+nemam..  imam samo jedan thread
+Zarko Nikasinovic says:
+ok
+ferenc says:
+ok!  fala ti puno na informacijama...
+Zarko Nikasinovic says:
+nema na cemu

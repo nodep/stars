@@ -1,0 +1,6 @@
+- ako je zvezda visestruka, racunati "prstene" u precnik preklapanja
+- Meseci na RA krugu.
+- preklapanje texta sa nebeskim krugovima
+- brojevi deklinacije
+- XML za nazive
+- remove the been_processed flag from text_object

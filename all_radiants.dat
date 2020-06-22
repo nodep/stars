@@ -1,0 +1,42 @@
+Shower                    Activity         Maximum       Radiant    V     r   ZHR   IMO
+Code                       Period        Date  lambda  alpha delta km/s
+
+Quadrantids             Jan 01-Jan 05   Jan 03  283.16  230   +49   41   2.1  120   QUA
+delta-Cancrids          Jan 01-Jan 24   Jan 17  297     130   +20   28   3.0    4   DCA
+alpha-Centaurids        Jan 28-Feb 21   Feb 08  319.2   210   -59   56   2.0    6   ACE
+delta-Leonids           Feb 15-Mar 10   Feb 24  336     168   +16   23	 3.0    2   DLE
+gamma-Normids           Feb 25-Mar 22   Mar 13  353     249   -51   56	 2.4    8   GNO
+Virginids               Jan 25-Apr 15  (Mar 24)(004)    195   -04   30	 3.0    5   VIR
+Lyrids                  Apr 16-Apr 25   Apr 22  032.1   271   +34   49	 2.9   15   LYR
+pi-Puppids              Apr 15-Apr 28   Apr 23  033.5   110   -45   18	 2.0  var.  PPU
+eta-Aquarids            Apr 19-May 28   May 05  045.5*  338   -01   66	 2.7   60   ETA
+Sagittarids             Apr 15-Jul 15  (May 19)(059)    247   -22   30	 2.5    5   SAG
+June Bootids            Jun 26-Jul 02   Jun 27  095.7   224   +48   18	 2.2  var.  JBO
+Pegasids                Jul 07-Jul 13   Jul 09  107.5   340   +15   70	 3.0    3   JPE
+July Phoenicids         Jul 10-Jul 16   Jul 13  111     032   -48   47	 3.0  var.  PHE
+Pisces Austrinids       Jul 15-Aug 10   Jul 28  125     341   -30   35	 3.2    5   PAU
+Southern delta-Aquarids Jul 12-Aug 19   Jul 28  125     339   -16   41	 3.2   20   SDA
+alpha-Capricornids      Jul 03-Aug 15   Jul 30  127     307   -10   25	 2.5    4   CAP
+Southern iota-Aquarids  Jul 25-Aug 15   Aug 04  132     334   -15   34	 2.9    2   SIA
+Northern delta-Aquarids Jul 15-Aug 25   Aug 08  136     335   -05   42	 3.4    4   NDA
+Perseids                Jul 17-Aug 24   Aug 12  139.8   046   +58   59	 2.6  110   PER
+kappa-Cygnids           Aug 03-Aug 25   Aug 17  145     286   +59   25	 3.0    3   KCG
+Northern iota-Aquarids  Aug 11-Aug 31   Aug 19  147     327   -06   31	 3.2    3   NIA
+alpha-Aurigids          Aug 25-Sep 05   Sep 01  158.6   084   +42   66	 2.5   10   AUR
+delta-Aurigids          Sep 05-Oct 10   Sep 08  166     060   +47   64	 3.0    6   DAU
+Piscids                 Sep 01-Sep 30   Sep 19  177     005   -01   26	 3.0    3   SPI
+Draconids               Oct 06-Oct 10   Oct 08  195.4   262   +54   20	 2.6  var.  GIA
+epsilon-Geminids        Oct 14-Oct 27   Oct 18  205     102   +27   70	 3.0    2   EGE
+Orionids                Oct 02-Nov 07   Oct 21  208*    095   +16   66	 2.9   20   ORI
+Southern Taurids        Oct 01-Nov 25   Nov 05  223     052   +13   27	 2.3    5   STA
+Northern Taurids        Oct 01-Nov 25   Nov 12  230     058   +22   29	 2.3    5   NTA
+Leonids                 Nov 14-Nov 21   Nov 17  235.27  153   +22   71	 2.5 storm? LEO
+alpha-Monocerotids      Nov 15-Nov 25   Nov 21  239.32  117   +01   65	 2.4  var.  AMO
+chi-Orionids            Nov 26-Dec 15   Dec 02  250     082   +23   28	 3.0    3   XOR
+Phoenicids              Nov 28-Dec 09   Dec 06  254.25  018   -53   18	 2.8  var.  PHO
+Puppid-Velids           Dec 01-Dec 15  (Dec 07)(255)    123   -45   40	 2.9   10   PUP
+Monocerotids            Nov 27-Dec 17   Dec 09  257     100   +08   42	 3.0    3   MON
+sigma-Hydrids           Dec 03-Dec 15   Dec 11  260     127   +02   58	 3.0    2   HYD
+Geminids                Dec 07-Dec 17   Dec 14  262.0   112   +33   35	 2.6  120   GEM
+Coma Berenicids         Dec 12-Jan 23   Dec 19  268     175   +25   65	 3.0    5   COM
+Ursids                  Dec 17-Dec 26   Dec 22  270.7   217   +76   33	 3.0   10   URS

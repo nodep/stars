@@ -1,0 +1,57 @@
+// zaboravio sam supernove
+
+dot    2 06 00   64 49 00  1.2  S1181		// m 0 u maximumu sjaja
+none   5 34 30   22 01 00  1.2  S1054		// koordinate kao pulsar i krab maglina  m -6 u max sjaja
+dot    0 25 18   64 09 00  1.2  S1572		// m -4 max
+dot   17 30 36  -21 29 00  1.2  S1604		// m -2.5 max
+
+
+// Kvazar 
+dot   12 29 06    2 03 00  1.2  3c273		// m 12.6
+
+// Pulsar
+none  05 34 30   22 01 00  1.2  PSR J0534+2200
+
+// X izvor
+dot   19 58 24   35 12 00  1.2  Cyg X-1		// m 8.9
+
+  
+
+// Iz pedagoskih razloga neka idu svi M osim M 40 koji i nije maglicasti objekt.
+// Ako nemas koordinate javi da ne kucam za dzaba, jer ih imam samo na papiru a 
+// jos nema ozbiljnih ocr varijanti da bi mogao 
+// da se izlezavam i uzivam dok naprave rade.
+
+// i nek ide 
+
+// Ngc 896 h Per 02 19 00   57 09 00 diam 30' mvint 4.3
+// Ngc 884 hi Per 02 22 24  57 07 00  diam 30' mvint 4.4
+
+// promenljive
+
+// beta Per Algol 03 08 25    40 58 18    m 2.12-3.39   p 2.87 d
+// beta Lyr Sheliak 18 50 13   33 21 56   m 3.25-4.36   p 12.91d
+// delta Cep 22 29 18  58 26 04  m 3.48-4.37   p 5.37 d
+// eta Aql   19 52 40   01 00 51 m 3.48-4.38   p 7.18d
+// omikron Cet Mira 02 19 32  -02 57 31 m2.00-10.10 p 331.96d
+// gama Cas 00 56 56  60 44 18  m 1.60-3.00  p nema
+
+// dvojne 
+
+// gama And 02 23 54    42 20 00   m 2.3/4.7  9.6"
+// epsilpn Boo 14 45 00  27 04 00  m 2.3/4.5  2.6"
+// ksi Boo 14 51 00 19 06 00       m 4.9/6.8  7"
+// alfa Cvn 12 53 52  38 35 00     m 2.9/5.4   20"
+// jota Cnc 08 46 00  28 46 00     m 4.0/4.2/6.6  30"
+// eta Cass 00 49 00  57 49 00     m 3.6/7.4    11.5"
+// beta Cyg 19 30 00  27 57 00     m 3.24/5.36  35"
+// alfa Her 17 14 00  14 23 00     m 3.5/5.4    4.5"
+// delta Her 17 15 00  24 50 00    m 3.1/8.3    8.9"
+// eta Per 02 50 00  55 54 00      m 3.9/8.5    28"
+// beta1 Sco  16 05 00  -19 08 00  m 2.9/5.0    14"
+// jota Tri   02h 12m 00  30 18 00 m 5.4/6.9  3.9"
+// W Eri 03 54 00  -02 57 00       m 4.9/6.3  6.8"
+// lambda Ori 05 35 00  09 56 00   m3.6/5.5   4.4"
+// alfa Gem  07 34 00  31 53 00    m 2.0/2.9/9.8  3.3"
+// zeta Uma  13 20 00  54 55 00    m2.4/3.9    14.4"
+// epsilon1/epsilon2 Lyr 18 44 00  02 30 00  m eps 1 5.0/6.0 2.8"  m eps 2 5.1/2.3 2.3" izmedju 1 i 2 208"

@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stars", "stars.vcxproj", "{E138C7F3-165A-4212-89BA-194D513A2E11}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bmp2pcl", "bmp2pcl.vcxproj", "{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bmpprint", "bmpprint.vcxproj", "{0BDB45B8-C712-4306-936D-ADF63F855EFE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bmpsplit", "bmpsplit.vcxproj", "{9768739B-6945-4BDA-A357-27BD2EE23075}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Debug|x64.ActiveCfg = Debug|x64
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Debug|x64.Build.0 = Debug|x64
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Debug|x86.ActiveCfg = Debug|Win32
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Debug|x86.Build.0 = Debug|Win32
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Release|x64.ActiveCfg = Release|x64
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Release|x64.Build.0 = Release|x64
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Release|x86.ActiveCfg = Release|Win32
+		{E138C7F3-165A-4212-89BA-194D513A2E11}.Release|x86.Build.0 = Release|Win32
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Debug|x64.ActiveCfg = Debug|x64
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Debug|x64.Build.0 = Debug|x64
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Debug|x86.ActiveCfg = Debug|Win32
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Debug|x86.Build.0 = Debug|Win32
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Release|x64.ActiveCfg = Release|x64
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Release|x64.Build.0 = Release|x64
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Release|x86.ActiveCfg = Release|Win32
+		{0720864B-00E5-4E56-A2F5-3C6BDEC7357F}.Release|x86.Build.0 = Release|Win32
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Debug|x64.ActiveCfg = Debug|x64
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Debug|x64.Build.0 = Debug|x64
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Debug|x86.ActiveCfg = Debug|Win32
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Debug|x86.Build.0 = Debug|Win32
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Release|x64.ActiveCfg = Release|x64
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Release|x64.Build.0 = Release|x64
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Release|x86.ActiveCfg = Release|Win32
+		{0BDB45B8-C712-4306-936D-ADF63F855EFE}.Release|x86.Build.0 = Release|Win32
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Debug|x64.ActiveCfg = Debug|x64
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Debug|x64.Build.0 = Debug|x64
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Debug|x86.ActiveCfg = Debug|Win32
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Debug|x86.Build.0 = Debug|Win32
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Release|x64.ActiveCfg = Release|x64
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Release|x64.Build.0 = Release|x64
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Release|x86.ActiveCfg = Release|Win32
+		{9768739B-6945-4BDA-A357-27BD2EE23075}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED2E9C81-78BF-479A-A280-19873000CA8F}
+	EndGlobalSection
+EndGlobal

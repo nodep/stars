@@ -1,0 +1,1 @@
+7z a stars * -x!*.obj -x!*.o -x!*.pch* -x!*.pdb -x!*.idb -x!*.ilk -x!*.res -x!*.exe -x!*.tlh -x!*.tli -x!*.gz -x!*.xml -x!*.ncb -x!*.eps -x!.git

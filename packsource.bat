@@ -1,0 +1,1 @@
+7z a starssrc *.cpp *.h *.rc *.bat *.dat *.cfg vsProj\*

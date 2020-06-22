@@ -1,0 +1,121 @@
+  205  Gx  0 40.4  +41 41 s  And  17.4   8.0  vB, vL, mE 165deg , vgvmbM; = M110                
+  221  Gx  0 42.7  +40 52 s  And   7.6   8.2  ! vvB, L, R, psmbMN; = M32                        
+  224  Gx  0 42.7  +41 16 s  And 178.    3.5  !!! eeB, eL, vmE (Andromeda); = M31               
+  253  Gx  0 47.6  -25 17 s  Scl  25.1   7.1  !! vvB, vvL, vmE 54deg , gbM                      
+  581  OC  1 33.2  +60 42 s  Cas   6.    7.4  Cl, pL, B, R, Ri, st 10...11; = M103              
+  598  Gx  1 33.9  +30 39 s  Tri  62.    5.7  ! eB, eL, R, vgbMN; = M33                         
+  628  Gx  1 36.7  +15 47 s  Psc  10.2   9.2  glob. cl. , F, vL, R, vg, psmbM, rr; = M74        
+  650  Pl  1 42.3  +51 34 s  Per   4.8  12. p vB, p of Dneb; = M76                              
+  651  Pl  1 42.3  +51 35 d  Per        12. p vB, f of Dneb; = M76                              
+  884  OC  2 22.4  +57 07 s  Per  30.    4. p ! Cl, vL, vRi, ruby * M                           
+  896  Nb  2 24.8  +61 54 s  Cas  27.         eF, pL, iF                                        
+ 1039  OC  2 42.0  +42 47 s  Per  35.    5.2  Cl, B, vL, lC, sc st 9; = M34                     
+ 1068  Gx  2 42.7  -00 01 s  Cet   6.9   8.8  vB, pL, iR, sbMrrN; = M77                         
+ 1904  Gb  5 24.5  -24 33 s  Lep   8.7   8.0  glob. cl. , pL, eRi, eC, rrr; = M79               
+ 1912  OC  5 28.7  +35 50 s  Aur  21.    6.4  Cl, B, vL, vRi, iF, st L & S; = M38               
+ 1952  Nb  5 34.5  +22 01 s  Tau   6.    8.4  vB, vL, E 135deg +/- , vglbM, r; = M1             
+ 1960  OC  5 36.1  +34 08 s  Aur  12.    6.0  Cl, B, vL, vRi, lC, st 9...11 sc; = M36           
+ 1976  Nb  5 35.4  -05 27 s  Ori  66.    4.   !!! theta1 Ori and the great neb; = M42           
+ 1982  Nb  5 35.6  -05 16 s  Ori  20.    9.   ! vB, vL, R with tail, mbM *8-9; = M43            
+ 2068  Nb  5 46.7  +00 03 s  Ori   8.    8.   B, L, wisp, gmbN, 3 st inv, r; = M78              
+ 2099  OC  5 52.4  +32 33 s  Aur  24.    5.6  Cl, Ri, pCM, st L & S; = M37                      
+ 2168  OC  6 08.9  +24 20 s  Gem  28.    5.1  Cl, vL, cRi, pC, st 9...16; = M35                 
+ 2237  Nb  6 30.3  +05 03 d  Mon              pB, vvL, dif, part of eL nebs ring ar 2239        
+ 2287  OC  6 47.0  -20 44 s  CMa  38.    4.5  Cl, vL, B, lC, st 8...; = M41                     
+ 2323  OC  7 03.2  -08 20 s  Mon  16.    5.9  ! Cl, vL, Ri, pC, E, st 12...16; = M50            
+ 2392  Pl  7 29.2  +20 55 s  Gem   0.7  10. p B, S, R, *9 M, *8 nf 100"                         
+ 2422  OC  7 36.6  -14 30 s  Pup  30.    4.4  Cl, B, vL, pRi, st L and S; = M47                 
+ 2437  OC  7 41.8  -14 49 s  Pup  27.    6.1  !, Cl, vB, vRi, vL, inv PN ; = M46                
+ 2438  Pl  7 41.8  -14 44 s  Pup   1.1  10. p PN , pB, pS, vlE, r, 3s .75 d                     
+ 2440  Pl  7 41.9  -18 13 s  Pup   0.5  11. p PN , cB, not v well def                           
+ 2447  OC  7 44.6  -23 52 s  Pup  22.    6.2  Cl, L, pRi, lC, st 8...13; = M93                  
+ 2548  OC  8 13.8  -05 48 s  Hya  54.    5.8  Cl, vL, pRi, pmC, st 9...13; = M48                
+ 2632  OC  8 40.1  +19 59 s  Cnc  95.    3.1  Praesepe; = M44                                   
+ 2682  OC  8 50.4  +11 49 s  Cnc  30.    6.9  ! Cl, vB, vL, eRi, lC, st 10...15; = M67          
+ 3031  Gx  9 55.6  +69 04 s  UMa  25.7   6.9  ! eB, eL, E 156deg , gsvmbMBN; = M81              
+ 3034  Gx  9 55.8  +69 41 s  UMa  11.2   8.4  vB, vL, vmE (ray); = M82                          
+ 3227  Gx 10 23.5  +19 52 s  Leo   5.6  10.8  pB, cL, R, D with 3226                            
+ 3242  Pl 10 24.8  -18 38 s  Hya  20.8   9. p ! PN , vB, lE 147deg , 45" d, blue                
+ 3351  Gx 10 44.0  +11 42 s  Leo   7.4   9.7  B, L, R, pgmbMN; = M95                            
+ 3368  Gx 10 46.8  +11 49 s  Leo   7.1   9.2  vB, vL, lE, vsvmbM, r; = M96                      
+ 3379  Gx 10 47.8  +12 35 s  Leo   4.5   9.3  vB, cL, R, psbM, r; = M105                        
+ 3556  Gx 11 11.5  +55 40 s  UMa   8.3  10.1  cB, vL, vmE 79deg , pbM, r; = M108                
+ 3587  Pl 11 14.8  +55 01 s  UMa   3.2  11.2  !!, PN , vB, vL, R, vvg, vsbM, 150" d; = M97      
+ 3623  Gx 11 18.9  +13 05 s  Leo  10.0   9.3  B, vL, mE 165deg +/- , gbMBN; = M65               
+ 3627  Gx 11 20.2  +12 59 s  Leo   8.7   9.0  B, vL, mE 150deg , mbM, 2 st np; = M66            
+ 3992  Gx 11 57.6  +53 23 s  UMa   7.6   9.8  cB, vL, pmE, sbMBrN; = M109                       
+ 4192  Gx 12 13.8  +14 54 s  Com   9.5  10.1  B, vL, vmE 152deg , vsvmbM; = M98                 
+ 4254  Gx 12 18.8  +14 25 s  Com   5.4   9.8  !! B, L, R, gbM, r, 3-branched spiral; = M99      
+ 4258  Gx 12 19.0  +47 18 s  CVn  18.2   8.3  vB, vL, vmE 0deg , sbMBN; = M106                  
+ 4303  Gx 12 21.9  +04 28 s  Vir   6.0   9.7  vB, vL, vsbM*, biN; = M61                         
+ 4321  Gx 12 22.9  +15 49 s  Com   6.9   9.4  !! pF, vL, R, vg, psbMrN, 2-br spir; = M100       
+ 4374  Gx 12 25.1  +12 53 s  Vir   5.0   9.3  vB, pL, R, psbM, r; = M84                         
+ 4382  Gx 12 25.4  +18 11 s  Com   7.1   9.2  vB, pL, R, bM, * np; = M85                        
+ 4406  Gx 12 26.2  +12 57 s  Vir   7.4   9.2  vB, L, R, gbMN, r; = M86                          
+ 4472  Gx 12 29.8  +08 00 s  Vir   8.9   8.4  vB, L, R, mbM, r; = M49                           
+ 4486  Gx 12 30.8  +12 24 s  Vir   7.2   8.6  vB, vL, R, mbM, 3rd of 3; = M87                   
+ 4501  Gx 12 32.0  +14 25 s  Com   6.9   9.5  B, vL, vmE; = M88                                 
+ 4548  Gx 12 35.4  +14 30 s  Com   5.4  10.2  B, L, lE, lbM; = M91                              
+ 4552  Gx 12 35.7  +12 33 s  Vir   4.2   9.8  pB, pS, R, gmbM; = M89                            
+ 4564  Gx 12 36.4  +11 26 s  Vir   3.1  11.1  pB, S, lE, psbM                                   
+ 4569  Gx 12 36.8  +13 10 s  Vir   9.5   9.5  pL, bMN; = M90                                    
+ 4579  Gx 12 37.7  +11 49 s  Vir   5.4   9.8  B, L, iR, vmbM, r; = M58                          
+ 4590  Gb 12 39.5  -26 45 s  Hya  12.0   8.2  glob. cl. , L, eRi, vC, iR, rrr, st 12; = M68     
+ 4594  Gx 12 40.0  -11 37 s  Vir   8.9   8.3  !, vB, vL, eE 92deg , vsmbMN; = M104              
+ 4621  Gx 12 42.0  +11 39 s  Vir   5.1   9.8  B, pL, lE, vsvmbM, 2 st p; = M59                  
+ 4649  Gx 12 43.7  +11 33 s  Vir   7.2   8.8  vB, pL, R, f of Dneb; = M60                       
+ 4736  Gx 12 50.9  +41 07 s  CVn  11.0   8.2  vB, L, iR, vsvmbMBN, r; = M94                     
+ 4826  Gx 12 56.7  +21 41 s  Com   9.3   8.5  ! vB, vL, vmE 120deg +/- , bMSBN; = M64           
+ 5024  Gb 13 12.9  +18 10 s  Com  12.6   7.7  !, glob. cl. , B, vC, iR, vvmbM, st 12; = M53     
+ 5055  Gx 13 15.8  +42 02 s  CVn  12.3   8.6  vB, L, pmE 120deg +/- , vsmbMBN; = M63            
+ 5139  Gb 13 26.8  -47 29 s  Cen  36.3   3.7  !!!, glob. cl. , omega Cen                        
+ 5194  Gx 13 29.9  +47 12 s  CVn  11.0   8.4  !!!, great spiral neb M51                         
+ 5236  Gx 13 37.0  -29 52 s  Hya  11.2   7.6  !! vB, vL, E 55deg , esbMN, 3-br spir; = M83      
+ 5272  Gb 13 42.2  +28 23 s  CVn  16.2   6.4  !!, glob. cl. , eB, vL, vsmbM, st 11...; = M3     
+ 5457  Gx 14 03.2  +54 21 s  UMa  26.9   7.7  pB, vL, iR, g, vsmbMBSN; = M101                   
+ 5904  Gb 15 18.6  +02 05 s  Ser  17.4   5.8  !!, glob. cl. , vB, L, eCM, st 11...15; = M5      
+ 5907  Gx 15 15.9  +56 19 s  Dra  12.3  10.4  cB, vL, vmE 155deg , vg, psbMN                    
+ 6121  Gb 16 23.6  -26 32 s  Sco  26.3   5.9  Cl, 8 or 10 B st line, with 5 st, rrr; = M4       
+ 6171  Gb 16 32.5  -13 03 s  Oph  10.0   8.1  glob. cl. , L, vRi, vmC, R, rrr; = M107           
+ 6205  Gb 16 41.7  +36 28 s  Her  16.6   5.9  !! glob. cl. , eB, vRi, vgeCM, st 11...; = M13    
+ 6254  Gb 16 57.1  -04 06 s  Oph  15.1   6.6  ! glob. cl. , B, vL, R, gvmbM, rrr, st 10...15; = 
+ 6266  Gb 17 01.2  -30 07 s  Oph  14.1   6.6  ! glob. cl. , vB, L, gmbM, rrr, st 14...16; = M62 
+ 6273  Gb 17 02.6  -26 16 s  Oph  13.5   7.2  glob. cl. , vB, L, R, vCM, rrr, st 16; = M19      
+ 6333  Gb 17 19.2  -18 31 s  Oph   9.3   7.9  glob. cl. , B, L, R, eCM, rrr, st 14; = M9        
+ 6341  Gb 17 17.1  +43 08 s  Her  11.2   6.5  glob. cl. , vB, vL, eCM, rrr, st S; = M92         
+ 6405  OC 17 40.1  -32 13 s  Sco  15.    4.2  Cl, L, iR, lC, st 7, 10...; = M6                  
+ 6475  OC 17 53.9  -34 49 s  Sco  80.    3.3  Cl, vB, pRi, lC, st 7...12; = M7                  
+ 6494  OC 17 56.8  -19 01 s  Sgr  27.    5.5  Cl, B, vL, pRi, lC, st 10...; = M23               
+ 6514 C+N 18 02.3  -23 02 s  Sgr  29.    6.3  !!! vB, vL, trifid, D* inv; = M20                 
+ 6523  Nb 18 03.8  -24 23 s  Sgr  90.    5.8  !!! vB, eL, eiF, with L Cl; = M8                  
+ 6531  OC 18 04.6  -22 30 s  Sgr  13.    5.9  Cl, pRi, lC, st 9...12; = M21                     
+ 6543  Pl 17 58.6  +66 38 s  Dra   5.8   9. p PN , vB, pS, sbMvSN                               
+ 6572  Pl 18 12.1  +06 51 s  Oph   0.1   9. p PN , vB, vS, R, l hazy                            
+ 6611 C+N 18 18.8  -13 47 s  Ser  35.    6.0  Cl, at least 100 st L & S; = M16                  
+ 6613  OC 18 19.9  -17 08 s  Sgr   9.    6.9  Cl, P, vlC; = M18                                 
+ 6618 C+N 18 20.8  -16 11 s  Sgr  46.    6.0  !!!, B, eL, eiF, 2 hooked; = M17                  
+ 6637  Gb 18 31.4  -32 21 s  Sgr   7.1   7.7  glob. cl. , B, L, R, rrr, st 14...16; = M69       
+ 6681  Gb 18 43.2  -32 18 s  Sgr   7.8   8.1  glob. cl. , B, pL, R, gbM, st 14...17; = M70      
+ 6694  OC 18 45.2  -09 24 s  Sct  15.    8.0  Cl, cL, pRi, pC, st 12...15; = M26                
+ 6705  OC 18 51.1  -06 16 s  Sct  14.    5.8  !, Cl, vB, L, iR, Ri, *9, st 11...; = M11         
+ 6715  Gb 18 55.1  -30 29 s  Sgr   9.1   7.7  glob. cl. , vB, L, R, g, smbM, rrr, st 15; = M54  
+ 6720  Pl 18 53.6  +33 02 s  Lyr   2.5   9.0  !!!, ring , B, pL, cE (in Lyra); = M57            
+ 6779  Gb 19 16.6  +30 11 s  Lyr   7.1   8.3  glob. cl. , B, L, iR, gvmCM, rrr, st 11...14; = M5
+ 6809  Gb 19 40.0  -30 58 s  Sgr  19.0   7.0  glob. cl. , pB, L, R, vRi, vgbM, st 12...15; = M55
+ 6818  Pl 19 44.0  -14 09 s  Sgr   0.3  10. p PN , B, vS, R                                     
+ 6822  Gx 19 44.9  -14 48 s  Sgr  10.2   9. p vF, vS, E, dif; = IC 4895                         
+ 6838  Gb 19 53.8  +18 47 s  Sge   7.2   8.3  Cl, vL, vRi, pmC, st 11...16; = M71               
+ 6853  Pl 19 59.6  +22 43 s  Vul  15.2   8.1  !!!, vB, vL, biN, iE (Dumbbell); = M27            
+ 6864  Gb 20 06.1  -21 55 s  Sgr   6.0   8.6  glob. cl. , B, pL, R, vmbMBN, rr; = M75           
+ 6913  OC 20 23.9  +38 32 s  Cyg   7.    6.6  Cl, P, lC, st L and S; = M29                      
+ 6960  Nb 20 45.7  +30 43 s  Cyg  70.         !! pB, cL, eiF, 52 Cyg inv                        
+ 6981  Gb 20 53.5  -12 32 s  Aqr   5.9   9.4  glob. cl. , pB, pL, R, gmCM, rrr; = M72           
+ 6994  OC 20 59.0  -12 38 s  Aqr   3.    9. p Cl, eP, vlC, no neb; = M73                        
+ 7009  Pl 21 04.2  -11 22 s  Aqr   1.7   8. p !!!, PN , vB, S, elliptic                         
+ 7078  Gb 21 30.0  +12 10 s  Peg  12.3   6.4  !, glob. cl. , vB, vL, iR, vsmbM, rrr, st vS; = M1
+ 7089  Gb 21 33.5  -00 49 s  Aqr  12.9   6.5  !!, glob. cl. , B, vL, gpmbM, rrr, st eS; = M2    
+ 7092  OC 21 32.2  +48 26 s  Cyg  32.    4.6  Cl, vL, vP, vlC, st 7...10; = M39                 
+ 7099  Gb 21 40.4  -23 11 s  Cap  11.0   7.5  !, glob. cl. , B, L, lE, gpmbM, st 12...16; = M30 
+ 7654  OC 23 24.2  +61 35 s  Cas  13.    6.9  Cl, L, Ri, mCM, R, st 9...13; = M52               
+I 434  Nb  5 41.0  -02 24 s  Ori  60.         neb, 60' l, south from zeta Ori                   
+I4725  OC 18 31.6  -19 15 s  Sgr  32.    4.6  Cl, pC; = M25                                     
