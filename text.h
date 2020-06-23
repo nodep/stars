@@ -214,7 +214,7 @@ public:
 		if (is_greek)
 			return text.find_first_of("bdJzlx0123456789") != std::string::npos;
 
-		return true;	// we won't bother
+		return true;	// we won't bother with one-off cases
 	}
 };
 
