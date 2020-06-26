@@ -7,7 +7,7 @@
 #include "storage.h"
 #include "ps_canvas.h"
 #include "asterism_line.h"
-#include "cout_log.h"
+#include "matrix.h"
 
 const double sq_root = sqrt(2.0);
 const size_t max_matrix_mem_usage = 1024 * 1024 * 2;
@@ -23,12 +23,12 @@ inline double calc_theta(const point& A, const point& B)
 		return beta;
 }
 
-std::vector<text_object>::iterator text_object::position_iterator::overlaps_another() const
+std::vector<text_object>::iterator text_object::position_selector::overlaps_another() const
 {
 	return store->get_overlapping_text(*parent);
 }
 
-bool text_object::overlaps_alinman(const cached_position* on_pos) const
+bool text_object::overlaps_alinman(const valid_position_t* on_pos) const
 {
 	// the asterism lines
 	point startPt, endPt, cornerPt;
@@ -109,7 +109,7 @@ bool text_object::overlaps_alinman(const cached_position* on_pos) const
 	return false;
 }
 
-bool text_object::overlaps_declination(const cached_position* on_pos) const
+bool text_object::overlaps_declination(const valid_position_t* on_pos) const
 {
 	double dec_step = cfg->get_map_radius() / cfg->get_max_pole_distance() * 10;
 	for (double dec = dec_step; dec <= cfg->get_map_radius(); dec += dec_step)
@@ -121,7 +121,7 @@ bool text_object::overlaps_declination(const cached_position* on_pos) const
 	return false;
 }
 
-bool text_object::overlaps_meridian(const cached_position* on_pos) const
+bool text_object::overlaps_meridian(const valid_position_t* on_pos) const
 {
 	size_t cnt = 0;
 	const double div12limit = 3 / cfg->get_max_pole_distance() * canvas->get_extent();
@@ -147,7 +147,7 @@ bool text_object::overlaps_meridian(const cached_position* on_pos) const
 	return false;
 }
 
-void text_object::init_position(cached_position* p_position)
+void text_object::init_position(std::vector<valid_position_t>::iterator& p_position)
 {
 	double objectR = bound_to.r;
 	p_position->position = bound_to;	// gets corrected later on
@@ -230,12 +230,14 @@ void text_object::init_position(cached_position* p_position)
 
 void text_object::set_position_direct(const point& p)
 {
-	_current_pos = _positions_cache;
+	/*
+	_current_pos = _valid_positions;
 	_current_pos->position_code = position_code_e::other;
 	_current_pos->position = p;
 	_end_cache = _current_pos + 1;
 	update_angle(_current_pos);
 	update_bounds(_current_pos);
+	*/
 }
 
 void text_object::connect() const
@@ -356,7 +358,7 @@ void text_object::print() const
 	canvas->draw(*this);
 }
 
-void text_object::update_angle(cached_position* on_pos)
+void text_object::update_angle(std::vector<valid_position_t>::iterator& on_pos)
 {
 	// cache the angle
 	on_pos->angle = 0.0;
@@ -364,7 +366,7 @@ void text_object::update_angle(cached_position* on_pos)
 		on_pos->angle += char_angle(text[chrCnt], height, on_pos->position.r - height, is_greek);
 }
 
-void text_object::update_bounds(cached_position* on_pos)
+void text_object::update_bounds(valid_position_t* on_pos)
 {
 	on_pos->left_down_bound = on_pos->right_up_bound = on_pos->position;
 	if (!has_descent())
@@ -470,10 +472,9 @@ std::string _report_hash()
 	return "todo !!!";
 }
 
-bool text_object::init_valid_positions()
+bool text_object::find_valid_positions()
 {
-	// cache all the valid positions for this text
-	_current_pos = _positions_cache;
+	_current_pos = _valid_positions;
 	for (size_t curr_pos_code = (size_t) position_code_e::right; curr_pos_code < (size_t) position_code_e::other; ++curr_pos_code)
 	{
 		// set the position code
@@ -518,9 +519,9 @@ bool text_object::init_valid_positions()
 	}
 
 	_end_cache = _current_pos;
-	_current_pos = _positions_cache;
+	_current_pos = _valid_positions;
 
-	return _end_cache != _positions_cache;
+	return _end_cache != _valid_positions;
 }
 
 log_t& operator << (log_t& o, const point& t)
@@ -559,7 +560,7 @@ log_t& operator << (log_t& o, const group_t& grp)
 // finding positions
 // ****************************
 
-typedef matrix<text_object::position_iterator>		matrix_t;
+typedef matrix<text_object::position_selector>		matrix_t;
 
 inline std::string int2str(const int i)
 {
@@ -588,7 +589,7 @@ std::string bytes_to_readable(const long long bytes)
 log_t& operator << (log_t& o, matrix_t& m)
 {
 	o << "matrix rows=" << m.size_rows() << " cols=" << m.size_columns()
-		<< "  size=" << m.size() << "(elem)  " << bytes_to_readable(sizeof(text_object::position_iterator) * m.size()) << "\n";
+		<< "  size=" << m.size() << "(elem)  " << bytes_to_readable(sizeof(text_object::position_selector) * m.size()) << "\n";
 
 	/*
 	for (size_t row_cnt = 0; row_cnt < m.size_rows(); ++row_cnt)
@@ -621,26 +622,27 @@ log_t& operator << (log_t& o, matrix_t& m)
 
 struct text_in_group_t		// the name should be changed
 {
-	std::vector<text_object>::iterator	txt_iter;		// the iterator to the text
-
-	// ******************************************************
-	// all the overlaps of this text with all the other texts
-
+	// the overlaps of this text with all the other texts
 	struct overlaps_another_t
 	{
 		size_t								in_position;		// this text overlaps with ...
-		text_object::position_iterator		with_position;		// ... a text in this position
+		text_object::position_selector		with_position;		// ... a text in this position
+
+		explicit overlaps_another_t(const size_t ip, text_object::position_selector& wp)
+			: in_position(ip), with_position(wp)
+		{}
 	};
 
-	std::vector<overlaps_another_t>			all_overlaps;
+	std::vector<text_object>::iterator	txt_iter;		// the iterator to the text
+	std::vector<overlaps_another_t>		all_overlaps;
 
-	void add_overlap(text_object::position_iterator& overlap_pos_iter)
+	explicit text_in_group_t(const std::vector<text_object>::iterator& ti)
+		: txt_iter(ti)
+	{}
+
+	void add_overlap(text_object::position_selector& overlap_pos_iter)
 	{
-		overlaps_another_t o;
-		o.in_position = txt_iter->get_current_position_index();
-		o.with_position = overlap_pos_iter;
-
-		all_overlaps.push_back(o);
+		all_overlaps.push_back(overlaps_another_t(txt_iter->get_current_position_index(), overlap_pos_iter));
 	}
 
 	// ***************************
@@ -750,8 +752,8 @@ void fill_stats(std::vector<text_in_group_t>& group)
 		while (in_text_iter != group.end())
 		{
 			// iterate all the posible positions of these two texts
-			text_object::position_iterator out_pos = out_text_iter->txt_iter->begin();
-			text_object::position_iterator in_pos;
+			text_object::position_selector out_pos = out_text_iter->txt_iter->begin();
+			text_object::position_selector in_pos;
 			while (out_pos != out_text_iter->txt_iter->end())
 			{
 				in_pos = in_text_iter->txt_iter->begin();
@@ -790,7 +792,7 @@ void fill_stats(std::vector<text_in_group_t>& group)
 
 struct get_position_grate_t
 {
-	typedef text_object::position_iterator		argument_type;
+	typedef text_object::position_selector		argument_type;
 	typedef text_object::position_quality_t		result_type;
 
 	result_type operator () (argument_type& arg) const
@@ -801,7 +803,7 @@ struct get_position_grate_t
 
 struct set_position_t
 {
-	typedef text_object::position_iterator		argument_type;
+	typedef text_object::position_selector		argument_type;
 	typedef void								result_type;
 
 	result_type operator () (argument_type& arg) const
@@ -847,384 +849,18 @@ void load(matrix<T>& m, const std::string& fname)
 	out.read((char*)&*m._data.begin(), sizeof(T) * m._data.size());
 }
 
-void text_group_processor_t::operator () (group_t& grp)
+void optimize_text_group(group_t& grp)
 {
-	static size_t grpcnt = 0;
-	grpcnt++;
-
-	log_stream << "processing group " << grpcnt << " started\n";
+	// build a matrix of the texts that fall into the criteria
+	matrix_t the_matrix;
 
 	// copy all the texts into a vector of text_in_group_t
 	std::vector<text_in_group_t> group;
-	text_in_group_t txt;
-	group_t::texts_container_t::iterator grp_txt_iter = grp.texts.begin();
-	while (grp_txt_iter != grp.texts.end())
-	{
-		txt.txt_iter = *grp_txt_iter;
-		group.push_back(txt);
-		++grp_txt_iter;
-	}
+	for (auto& txt : grp.texts)
+		group.push_back(text_in_group_t(txt));
 
-	// collect all the overlaps for the group
 	fill_stats(group);
 
 	// order for processing: by perfect then by free then by valid
 	std::sort(group.begin(), group.end(), text_in_group_t::process_order_t());
-
-	// !!! debug output begin
-	// count the number of texts that have free and perfect positions
-	const size_t total_non_free_cnt = std::count_if(group.begin(), group.end(), [](const auto& txt) { return !txt.has_free(); });
-	const size_t total_non_perfect_cnt = std::count_if(group.begin(), group.end(), [](const auto& txt) { return !txt.has_perfect(); });
-
-	log_stream << "*************************************************************\n";
-	std::vector<text_in_group_t>::iterator txt_iter = group.begin();
-	while (txt_iter != group.end())
-	{
-		log_stream << *txt_iter->txt_iter << "\t";
-		log_stream << "total/overlap/free/perfect: " << txt_iter->total_pos_cnt << " " << txt_iter->overlap_pos_cnt << " " << txt_iter->free_pos_cnt << " " << txt_iter->perfect_pos_cnt << "\n";
-
-		++txt_iter;
-	}
-	log_stream << "------------------------------------------------------------\n";
-	log_stream << "group size: " << group.size() << "\n";
-	log_stream << "group size after reduction (non free/non perfect): " << total_non_free_cnt << " " << total_non_perfect_cnt << "\n";
-	// !!! debug output end
-
-	// build a matrix of the texts that fall into the criteria
-	matrix_t the_matrix;
-
-	// the temp files used to store the combination data
-	std::vector<std::string> temp_fnames;
-
-	// iterate the texts
-	std::vector<text_in_group_t>::iterator grp_iter = group.begin();
-	while (grp_iter != group.end())
-	{
-		// break with the first text with perfect positions
-		if (grp_iter->has_perfect())
-			break;
-
-		text_object& curr_text = *grp_iter->txt_iter;
-
-		log_stream << curr_text << "\n";
-
-		// collect all the valid positions of this text
-		std::vector<text_object::position_iterator> text_valid_positions;
-		text_object::position_iterator txt_pos_iter = curr_text.begin();
-		while (txt_pos_iter != curr_text.end())
-		{
-			text_valid_positions.push_back(txt_pos_iter);
-			++txt_pos_iter;
-		}
-
-		size_t predicted_dest_size;
-		if (the_matrix.empty())
-		   predicted_dest_size = sizeof(matrix_t::iterator) * text_valid_positions.size();
-		else
-		   predicted_dest_size = (the_matrix.size_columns() + 1) * the_matrix.size_rows() * text_valid_positions.size() * sizeof(matrix_t::iterator);
-
-		// check if the matrix data is large enough to be swaped to HDD
-		if (predicted_dest_size > max_matrix_mem_usage)
-		// if ((the_matrix.size() * sizeof(text_object::position_iterator)) > max_matrix_mem_usage)
-		{
-			// save the matrix to HDD and clear the memory
-			const std::string tmp_filename(get_temp_filename());
-			temp_fnames.push_back(tmp_filename);
-			save(the_matrix, tmp_filename);
-
-			the_matrix.clear();
-		}
-
-		// the first text in the matrix?
-		if (the_matrix.empty())
-		{
-			the_matrix.set_columns(1);
-
-			// add all the valid positions for this new text
-			std::vector<text_object::position_iterator>::iterator new_text_pos_iter = text_valid_positions.begin();
-			while (new_text_pos_iter != text_valid_positions.end())
-			{
-				the_matrix.push_row(new_text_pos_iter, new_text_pos_iter + 1);
-				++new_text_pos_iter;
-			}
-
-		} else {
-
-			// the new matrix to copy the data to
-			matrix_t dest_matrix;
-			dest_matrix.set_columns(the_matrix.size_columns() + 1);
-
-			// iterate the rows of the source matrix
-			for (matrix_t::size_type row_num = 0; row_num < the_matrix.size_rows(); ++row_num)
-			{
-				// get a row from the source matrix
-				std::pair<matrix_t::iterator, matrix_t::iterator> row_range = the_matrix.get_row(row_num);
-
-				// iterate the valid positions of the new text
-				std::vector<text_object::position_iterator>::iterator new_text_iter = text_valid_positions.begin();
-				while (new_text_iter != text_valid_positions.end())
-				{
-					// find if anything overlaps
-					matrix_t::iterator first = row_range.first;
-					matrix_t::iterator last = row_range.second;
-
-					while (first != last)
-					{
-						if (overlap_text_text(**first, **new_text_iter))
-							break;
-
-						++first;
-					}
-
-					// no overlaps?
-					if (first == last)
-					{
-						// add the new valid position group to the dest_matrix
-
-						// copy the source position
-						dest_matrix.push_row(row_range.first, row_range.second);
-
-						// add the new text in its current position
-						dest_matrix.get(dest_matrix.size_rows() - 1, dest_matrix.size_columns() - 1) = *new_text_iter;
-					}
-
-					++new_text_iter;
-				}
-
-				if (dest_matrix.empty())
-				{
-					throw "internal error: dest_matrix is empty";
-				}
-			}
-
-			// swap the matrices
-			std::swap(the_matrix, dest_matrix);
-		}
-
-		size_t actual_dest_size = the_matrix.size() * sizeof(matrix_t::iterator);
-		//log_stream << "predicted_dest_size=" << bytes_to_readable(predicted_dest_size) << '\t' << "actual_dest_size=" << bytes_to_readable(actual_dest_size) << '\n';
-		//log_stream << the_matrix;
-
-		++grp_iter;
-	}
-
-	// save the last matrix into a temp file
-	if (!the_matrix.empty())
-	{
-		const std::string tmp_filename(get_temp_filename());
-		temp_fnames.push_back(tmp_filename);
-		save(the_matrix, tmp_filename);
-		the_matrix.clear();
-	}
-
-	log_stream << "matrices created\n";
-
-	// position the remaining texts into perfect positions
-	while (grp_iter != group.end())
-	{
-		grp_iter->txt_iter->set_position_index(grp_iter->perfect_pos.front());
-		++grp_iter;
-	}
-
-	// iterate the saved matrices to find position combinations
-	if (!temp_fnames.empty())
-	{
-		// create all the matrix combinations 
-		std::string result_temp_filename = get_temp_filename();
-		std::ifstream source_file;
-		std::ofstream result_file;
-		std::string source_file_name = temp_fnames.front();
-		std::vector<std::string>::iterator tfn_iter = temp_fnames.begin() + 1;
-		size_t result_row_cnt;
-		size_t result_col_cnt;
-
-		bool is_final_check = false, is_first_valid_combination = true;
-		std::vector<text_object::position_iterator> best_positions;
-		std::vector<text_object::position_quality_t> curr_position_grades;
-		size_t best_pos_grade = 0;
-
-		while (tfn_iter != temp_fnames.end())
-		{
-			// create the result file
-			result_file.open(result_temp_filename, std::ios_base::out || std::ios_base::trunc);
-
-			// open the source file
-			source_file.open(source_file_name);
-
-			// load the source matrix
-			load(the_matrix, *tfn_iter);
-
-			// load the dimension of the source matrix
-			size_t src_rows, src_cols;
-			source_file.read((char*) &src_rows, sizeof(src_rows));
-			source_file.read((char*) &src_cols, sizeof(src_cols));
-
-			log_stream << "reading source file: " << source_file_name << " rows: " << src_rows << " cols: " << src_cols << "\n";
-
-			// save 4 bytes for the row number that we'll rewrite later
-			result_col_cnt = src_cols + the_matrix.size_columns();
-			result_file.write((char*) &result_col_cnt, sizeof(result_col_cnt));
-			// save 4 more bytes for the number of columns in the result file
-			result_file.write((char*) &result_col_cnt, sizeof(result_col_cnt));
-
-			// should we activate the final check
-			if (temp_fnames.end() - tfn_iter == 1)
-			{
-				is_final_check = true;
-				best_positions.insert(best_positions.end(), result_col_cnt, text_object::position_iterator());
-				curr_position_grades.insert(curr_position_grades.end(), result_col_cnt, text_object::position_quality_t());
-			}
-
-			// load the rest from the source matrix in a loop and write the new combinations into result_file
-			result_row_cnt = 0;
-			std::vector<text_object::position_iterator> src_group(src_cols, text_object::position_iterator());
-
-			for (size_t file_row_cnt = 0; file_row_cnt < src_rows; ++file_row_cnt)
-			{
-				// load the group from the source file
-				const size_t bytesToRead = src_cols * sizeof(text_object::position_iterator);
-				source_file.read((char*) &src_group.front(), bytesToRead);
-
-				log_stream << "file row: " << src_rows - file_row_cnt << "    \r";
-
-				if (bytesToRead != source_file.gcount())
-				{
-					throw "to read: " + std::to_string(bytesToRead) + " read: " + std::to_string(source_file.gcount()) + "\n";
-				}
-
-				const std::pair<std::vector<text_object::position_iterator>::iterator, std::vector<text_object::position_iterator>::iterator>
-					file_row(src_group.begin(), src_group.end());
-
-				std::pair<std::vector<text_object::position_iterator>::iterator, std::vector<text_object::position_iterator>::iterator> file_row_iter = file_row;
-
-				for (size_t matrix_row_cnt = 0; matrix_row_cnt < the_matrix.size_rows(); ++matrix_row_cnt)
-				{
-					const std::pair<matrix_t::iterator, matrix_t::iterator> matrix_row(the_matrix.get_row(matrix_row_cnt));
-					std::pair<matrix_t::iterator, matrix_t::iterator> matrix_row_iter(matrix_row);
-
-					// iterate through the source matrix
-					while (matrix_row_iter.first != matrix_row_iter.second)
-					{
-						// reset the group range
-						file_row_iter.first = file_row.first;
-
-						// iterate the group we read from source_file
-						while (file_row_iter.first != file_row_iter.second)
-						{
-							if (overlap_text_text(**matrix_row_iter.first, **file_row_iter.first))
-								break;
-
-							++file_row_iter.first;
-						}
-
-						// overlaps found?
-						if (file_row_iter.first != file_row_iter.second)
-							break;
-
-						++matrix_row_iter.first;
-					}
-
-					// no overlaps found?
-					if (matrix_row_iter.first == matrix_row_iter.second)
-					{
-						if (is_final_check)
-						{
-							// get the grade of the combination from the part we have in the_matrix
-							std::transform(matrix_row.first, matrix_row.second, curr_position_grades.begin(), get_position_grate_t());
-
-							std::transform(src_group.begin(), src_group.end(), curr_position_grades.begin() + (matrix_row.second - matrix_row.first), get_position_grate_t());
-
-							const size_t curr_pos_grade = std::accumulate(curr_position_grades.begin(), curr_position_grades.end(), 0);
-
-							if (curr_pos_grade > best_pos_grade  ||  is_first_valid_combination)
-							{
-								best_pos_grade = curr_pos_grade;
-
-								// remember this combination
-								std::copy(src_group.begin(), src_group.end(), best_positions.begin());
-								std::copy(matrix_row.first, matrix_row.second, best_positions.begin() + best_positions.size());
-
-								is_first_valid_combination = false;
-							}
-						}
-						else {
-							// save the combination
-							std::vector<text_object::position_quality_t> curr_position_grades(result_col_cnt);
-
-							// the part from the source matrix
-							result_file.write((const char*) &*matrix_row.first, the_matrix.size_columns() * sizeof(text_object::position_iterator));
-
-							// the part from the source file
-							result_file.write((const char*) &*src_group.begin(), src_group.size() * sizeof(text_object::position_iterator));
-						}
-
-						// inc the number of rows in the result file
-						++result_row_cnt;
-					}
-				}
-			}
-
-			// write the number of rows into the result
-			result_file.seekp(0);
-			result_file.write((char*) &result_row_cnt, sizeof(result_row_cnt));
-
-			source_file.close();
-			result_file.close();
-
-			// set the new source/result filenames
-			result_temp_filename = get_temp_filename();
-			source_file_name = result_temp_filename;
-
-			++tfn_iter;
-		}
-
-		// are the combinations still in memory?
-		if (temp_fnames.size() < 2)
-		{
-			// find the position in the matrix with the best grade
-			matrix_t::iterator best_position_iter = 0;
-			int best_pos_grade = 0;
-			std::vector<text_object::position_quality_t> curr_position_grades(the_matrix.size_columns());
-			matrix_t::iterator matrix_iter = the_matrix.begin();
-			for (size_t rows_cnt = 0; rows_cnt < the_matrix.size_rows(); ++rows_cnt)
-			{
-				// get the grade of the combination
-				std::transform(	matrix_iter, matrix_iter + the_matrix.size_columns(),
-								curr_position_grades.begin(),
-								get_position_grate_t());
-
-				// is this one better?
-				int curr_pos_grade = std::accumulate(curr_position_grades.begin(), curr_position_grades.end(), 0);
-				if (curr_pos_grade > best_pos_grade  ||  best_position_iter == 0)
-				{
-					best_pos_grade = curr_pos_grade;
-					best_position_iter = matrix_iter;
-				}
-
-				// advance to the next row
-				matrix_iter += the_matrix.size_columns();
-			}
-
-			// set the best position
-			if (best_position_iter != 0)
-				std::for_each(best_position_iter, best_position_iter + the_matrix.size_columns(), set_position_t());
-
-		} else {
-			// set the best position
-			std::for_each(best_positions.begin(), best_positions.end(), set_position_t());
-		}
-	}
-
-	log_stream << "d";
-
-	// delete all the files we've created
-	std::vector<std::string>::iterator tfn_iter = temp_fnames.begin();
-	while (tfn_iter != temp_fnames.end())
-	{
-		remove(tfn_iter->c_str());
-
-		++tfn_iter;
-	}
-
-	log_stream << "processing group " << grpcnt << " ended\n";
 }

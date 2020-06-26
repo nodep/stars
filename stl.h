@@ -25,7 +25,6 @@
 // using namespace std;
 
 #include "cout_log.h"
-#include "matrix.h"
 
 template <class T>	typename T::const_iterator begin(const T& v)	{ return v.begin(); }
 template <class T>	typename T::iterator begin(T& v)				{ return v.begin(); }

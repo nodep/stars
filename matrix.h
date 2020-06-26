@@ -1,5 +1,9 @@
 #pragma once
 
+
+template <typename T>
+class matrix_view;
+
 // simple, rectangle, dense, row major, generic matrix
 template <class T>
 class matrix
@@ -15,8 +19,10 @@ public:
 	typedef T*			pointer;
 	typedef const T&	const_reference;
 	typedef T&			reference;
-	typedef size_t		size_type;
-	typedef ptrdiff_t	distance_type;
+	typedef size_t				size_type;
+	typedef ptrdiff_t			distance_type;
+	typedef const value_type*	const_iterator;
+	typedef typename std::vector<T>::iterator			iterator;
 
 private:
 	std::vector<T>		_data;
@@ -57,8 +63,6 @@ private:
 	}
 
 public:
-	typedef const value_type*	const_iterator;
-	typedef value_type*			iterator;
 
 	explicit matrix(size_type c = 0)
 		: _rows(0), _columns(c)
@@ -81,19 +85,21 @@ public:
 		set_columns(_columns + 1);
 	}
 
-	iterator begin()				{ return &*_data.begin(); }
+	iterator begin()				{ return _data.begin(); }
 	const_iterator begin() const	{ return _data.begin(); }
 
 	iterator end()					{ return _data.end(); }
 	const_iterator end() const		{ return _data.end(); }
 
-	// added
 	iterator get_pos(size_type row, size_type col)
-	{ return iterator(this, _data.begin() + row * _columns + col); }
+	{
+		return iterator(this, _data.begin() + row * _columns + col);
+	}
 
 	const_iterator get_pos(size_type row, size_type col) const
-	{ return const_iterator(this, _data.begin() + row * _columns + col); }
-
+	{
+		return const_iterator(this, _data.begin() + row * _columns + col);
+	}
 
 	void reserve(size_type rows)
 	{
@@ -136,10 +142,16 @@ public:
 		return *(_data.begin() + row * _columns + col);
 	}
 
+	matrix_view<T> get_row_view(const size_type row)
+	{
+		assert(row < _rows);
+		return matrix_view<T>();
+	}
+
 	std::pair<iterator, iterator> get_row(const size_type row)
 	{
 		assert(row < _rows);
-		iterator start = &*(_data.begin() + _columns * row);
+		iterator start = _data.begin() + _columns * row;
 		iterator end   = start + _columns;
 		return std::pair<iterator, iterator>(start, end);
 	}
@@ -171,7 +183,7 @@ template <class T>
 inline std::ostream& operator << (std::ostream& o, const matrix<T>& m)
 {
 	o << "matrix rows=" << m.size_rows() << " cols=" << m.size_columns()
-		<< "  size=" << m.size() << "(elem)  " << sizeof(text_object::position_iterator) * m.size() / 1024.0 / 1024 << "(MB)\n";
+		<< "  size=" << m.size() << "(elem)  " << sizeof(text_object::position_selector) * m.size() / 1024.0 / 1024 << "(MB)\n";
 
 	/*
 	for (size_t row_cnt = 0; row_cnt < m.size_rows(); ++row_cnt)
@@ -189,3 +201,29 @@ inline std::ostream& operator << (std::ostream& o, const matrix<T>& m)
 	return o;
 	*/
 }
+
+
+template <typename T>
+class matrix_view
+{
+private:
+	typedef typename matrix<T>::iterator	iterator;
+
+	iterator _begin;
+	iterator _end;
+
+public:
+	matrix_view(iterator& b, iterator& e)
+		: _begin(b), _end(e)
+	{}
+
+	iterator begin()
+	{
+		return _begin;
+	}
+
+	iterator end()
+	{
+		return _end;
+	}
+};

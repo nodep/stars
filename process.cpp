@@ -989,7 +989,7 @@ void process::fixed_texts()
 		pos_pt = pos_coord.conv2point();
 		text.set_position_direct(pos_pt);
 
-		angle = text.curr_pos().angle;
+		angle = text.valid_positions.front().angle;
 
 		switch (p[6])
 		{
@@ -1186,13 +1186,13 @@ void process::init_text_positions()
 	log_stream << "initializing text positions...\n";
 	log_stream << "total moveable texts on map: " << store->texts.size() << "\n";
 
-	// first iterate through all the text and cache their valid positions
+	// iterate through all the text and find their valid positions
 	size_t cnt = 0;
 	while (cnt < store->texts.size())
 	{
 		text_object& to(store->texts[cnt]);
 
-		if (!to.init_valid_positions())
+		if (!to.find_valid_positions())
 		{
 			log_stream << "<!warning!>Can't find any position for text <" << to.text << "> -- text deleted.\n";
 
@@ -1203,7 +1203,7 @@ void process::init_text_positions()
 		}
 	}
 
-	log_stream << "time taken: " << swatch.get_msec() / 1000.0 << "sec\n";
+	log_stream << "init text time taken: " << swatch.get_msec() / 1000.0 << "sec\n";
 }
 
 typedef std::pair<std::vector<text_object>::iterator, std::vector<text_object>::iterator> connection_t;
@@ -1218,37 +1218,21 @@ void process::find_text_positions()
 	std::vector<connection_t> connections;
 
 	// iterate through every pair of texts on the map
-	const size_t total_texts = store->texts.size();
-	for (size_t out_cnt = 0; out_cnt < total_texts - 1; ++out_cnt)
+	for (auto out_iter = store->texts.begin(); out_iter < store->texts.end(); out_iter++)
 	{
-		for (size_t in_cnt = out_cnt + 1; in_cnt < total_texts; ++in_cnt)
+		for (auto in_iter = out_iter + 1; in_iter < store->texts.end(); in_iter++)
 		{
-			connection_t conn;
-			conn.first = store->texts.begin() + out_cnt;
-			conn.second = store->texts.begin() + in_cnt;
-
-			text_object& out_text = *conn.first;
-			text_object& in_text = *conn.second;
-
-			text_object::position_iterator out_iter = out_text.begin();
-
-			// iterate through all the text positions
-			// for these two texts
+			// iterate through all the positions for these two texts
 			bool found = false;
-			while (out_iter != out_text.end()  &&  !found)
+			for (auto& out_pos_sel: text_object::position_selector(out_iter))
 			{
-				*out_iter;	// puts the texts in their current position
-				text_object::position_iterator in_iter = in_text.begin();
-				while (in_iter != in_text.end())
+				for (auto& in_pos_sel : text_object::position_selector(in_iter))
 				{
-					*in_iter;
-
-					if (overlap_text_text(out_text, in_text))
+					if (overlap_text_text(out_pos_sel, in_pos_sel))
 					{
-						in_text.has_overlaps = true;
-						out_text.has_overlaps = true;
+						out_pos_sel.parent->has_overlaps = in_pos_sel.parent->has_overlaps = true;
 
-						connections.push_back(conn);
+						connections.push_back(connection_t(out_iter, in_iter));
 						found = true;
 						break;
 					}
@@ -1361,7 +1345,8 @@ void process::find_text_positions()
 	return;
 	*/
 
-	std::for_each(groups.begin(), groups.end(), text_group_processor_t());
+	std::for_each(groups.begin(), groups.end(), optimize_text_group);
+	//std::for_each(groups.begin(), groups.end(), text_group_processor_t());
 
 	log_stream << "time taken: " << swatch.get_msec() / 1000.0 << "sec\n";
 
@@ -1373,16 +1358,16 @@ void process::find_text_positions()
 		// we need some ugly special case handling for polaris
 		if (txt_iter->text == "Polaris")
 		{
-			txt_iter->set_position_index(2);	// right
+			//txt_iter->set_position_index(2);	// right
 		} else if (txt_iter->text == "a"  &&  txt_iter->bound_to.r < 2) {
-			txt_iter->set_position_index(1);	// left
+			//txt_iter->set_position_index(1);	// left
 			// log_stream << "spec pos for: " << txt_iter->bound_to.r << "\n";
 		} else if (!txt_iter->has_overlaps) {
-			text_object::position_iterator pos_iter = txt_iter->begin();
+			text_object::position_selector pos_iter(txt_iter);
 
 			// init the first position
 			int best_grade = pos_iter->get_pos_grade();
-			text_object::position_iterator best_pos_iter = pos_iter;
+			text_object::position_selector best_pos_iter = pos_iter;
 
 			++pos_iter;
 

@@ -125,6 +125,8 @@ struct storage
 
 	std::vector<text_object>::iterator get_overlapping_text(const text_object& text)
 	{
+		assert(false);
+		/*
 		std::vector<text_object>::iterator textsIter = texts.begin();
 		while (textsIter != texts.end())
 		{
@@ -133,8 +135,9 @@ struct storage
 
 			++textsIter;
 		}
+		*/
 
-		return textsIter;
+		return texts.begin();
 	}
 };
 

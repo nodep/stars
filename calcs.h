@@ -95,11 +95,11 @@ bool overlap_text_object(const text_object& text, const Object& obj)
 	return _overlap_text_object(text, obj.coord.conv2point(), obj.diameter);
 }
 
-bool overlap_1st_text_2nd(const text_object& text1, const text_object& text2);
+bool overlap_1st_text_2nd(const text_object::position_selector& pos_sel1, const text_object::position_selector& pos_sel2);
 
-inline bool overlap_text_text(const text_object& text1, const text_object& text2)
+inline bool overlap_text_text(const text_object::position_selector& pos_sel1, const text_object::position_selector& pos_sel2)
 {
-	return overlap_1st_text_2nd(text1, text2)  ||  overlap_1st_text_2nd(text2, text1);
+	return overlap_1st_text_2nd(pos_sel1, pos_sel2)  ||  overlap_1st_text_2nd(pos_sel2, pos_sel1);
 }
 
 /*

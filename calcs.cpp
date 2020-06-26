@@ -10,8 +10,8 @@
 bool _overlap_text_object(const text_object& text, const point& obj_pos, const double diameter)
 {
 	// get the boundaries of the text
-	point textLD = text.curr_pos().left_down_bound;
-	point textRU = text.curr_pos().right_up_bound;	
+	const point& textLD = text.valid_positions.front().left_down_bound;
+	const point& textRU = text.valid_positions.front().right_up_bound;
 
 	// if the circle's center (R) is inside the text
 	bool isInR = is_in_radius(textRU.r, textLD.r, obj_pos.r);
@@ -85,13 +85,13 @@ bool _overlap_text_object(const text_object& text, const point& obj_pos, const d
 // ***********************
 // ***********************
 
-bool overlap_1st_text_2nd(const text_object& text1, const text_object& text2)
+bool overlap_1st_text_2nd(const text_object::position_selector& pos_sel1, const text_object::position_selector& pos_sel2)
 {
 	// two texts overlap if any of their corners overlap
-	point textLD1 = text1.curr_pos().left_down_bound;
-	point textRU1 = text1.curr_pos().right_up_bound;
-	point textLD2 = text2.curr_pos().left_down_bound;
-	point textRU2 = text2.curr_pos().right_up_bound; 
+	const point& textLD1 = pos_sel1.curr_pos->left_down_bound;
+	const point& textRU1 = pos_sel1.curr_pos->right_up_bound;
+	const point& textLD2 = pos_sel2.curr_pos->left_down_bound;
+	const point& textRU2 = pos_sel2.curr_pos->right_up_bound;
 
 	bool isLeftAlpha = is_in_angle(textLD1.alpha, textRU1.alpha, textLD2.alpha);
 	bool isRightAlpha = is_in_angle(textLD1.alpha, textRU1.alpha, textRU2.alpha);
