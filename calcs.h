@@ -70,8 +70,8 @@ inline bool is_in_angle(const double start, const double end, const double check
 
 	if (inStart < inEnd)
 		return (inCheck >= inStart  &&  inCheck <= inEnd);
-	else
-		return (inCheck >= inStart  ||  inCheck <= inEnd);
+
+	return (inCheck >= inStart  ||  inCheck <= inEnd);
 } 
 
 inline bool is_in_radius(const double start, const double end, const double check)
@@ -87,19 +87,19 @@ inline double line_length(const point& start, const point& end)
 void precession(const double, const coordinate&, const double, coordinate&);
 
 // internal
-bool _overlap_text_object(const text_object& text, const point& obj_pos, const double diameter);
+bool _overlap_text_object(const text_object& text, const text_object::position_t& vp, const point& obj_pos, const double diameter);
 
 template <class Object>
-bool overlap_text_object(const text_object& text, const Object& obj)
+bool overlap_text_object(const text_object& text, const text_object::position_t& vp, const Object& obj)
 {
-	return _overlap_text_object(text, obj.coord.conv2point(), obj.diameter);
+	return _overlap_text_object(text, vp, obj.coord.conv2point(), obj.diameter);
 }
 
-bool overlap_1st_text_2nd(const text_object::position_selector& pos_sel1, const text_object::position_selector& pos_sel2);
+bool overlap_1st_text_2nd(const text_object::position_t& vp1, const text_object::position_t& vp2);
 
-inline bool overlap_text_text(const text_object::position_selector& pos_sel1, const text_object::position_selector& pos_sel2)
+inline bool overlap_text_text(const text_object::position_t& vp1, const text_object::position_t& vp2)
 {
-	return overlap_1st_text_2nd(pos_sel1, pos_sel2)  ||  overlap_1st_text_2nd(pos_sel2, pos_sel1);
+	return overlap_1st_text_2nd(vp1, vp2)  ||  overlap_1st_text_2nd(vp2, vp1);
 }
 
 /*

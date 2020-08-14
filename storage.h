@@ -121,11 +121,10 @@ struct storage
 		store_mag(gc);
 	}
 
-	bool text_overlaps_object(const text_object& text);
+	bool text_overlaps_object(text_object& text, const text_object::position_t& vp);
 
 	std::vector<text_object>::iterator get_overlapping_text(const text_object& text)
 	{
-		assert(false);
 		/*
 		std::vector<text_object>::iterator textsIter = texts.begin();
 		while (textsIter != texts.end())
@@ -137,7 +136,7 @@ struct storage
 		}
 		*/
 
-		return texts.begin();
+		return texts.end();
 	}
 };
 

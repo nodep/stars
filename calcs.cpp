@@ -7,11 +7,11 @@
 #include "storage.h"
 #include "config.h"
 
-bool _overlap_text_object(const text_object& text, const point& obj_pos, const double diameter)
+bool _overlap_text_object(const text_object& text, const text_object::position_t& vp, const point& obj_pos, const double diameter)
 {
 	// get the boundaries of the text
-	const point& textLD = text.valid_positions.front().left_down_bound;
-	const point& textRU = text.valid_positions.front().right_up_bound;
+	const point& textLD = vp.left_down_bound;
+	const point& textRU = vp.right_up_bound;
 
 	// if the circle's center (R) is inside the text
 	bool isInR = is_in_radius(textRU.r, textLD.r, obj_pos.r);
@@ -79,19 +79,13 @@ bool _overlap_text_object(const text_object& text, const point& obj_pos, const d
 	return false;
 }
 
-// ***********************
-// ***********************
-// main speed bottleneck!!!
-// ***********************
-// ***********************
-
-bool overlap_1st_text_2nd(const text_object::position_selector& pos_sel1, const text_object::position_selector& pos_sel2)
+bool overlap_1st_text_2nd(const text_object::position_t& vp1, const text_object::position_t& vp2)
 {
 	// two texts overlap if any of their corners overlap
-	const point& textLD1 = pos_sel1.curr_pos->left_down_bound;
-	const point& textRU1 = pos_sel1.curr_pos->right_up_bound;
-	const point& textLD2 = pos_sel2.curr_pos->left_down_bound;
-	const point& textRU2 = pos_sel2.curr_pos->right_up_bound;
+	const point& textLD1 = vp1.left_down_bound;
+	const point& textRU1 = vp1.right_up_bound;
+	const point& textLD2 = vp2.left_down_bound;
+	const point& textRU2 = vp2.right_up_bound;
 
 	bool isLeftAlpha = is_in_angle(textLD1.alpha, textRU1.alpha, textLD2.alpha);
 	bool isRightAlpha = is_in_angle(textLD1.alpha, textRU1.alpha, textRU2.alpha);

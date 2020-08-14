@@ -5,76 +5,50 @@
 
 storage* store = 0;
 
-struct overlaps_object
+bool storage::text_overlaps_object(text_object& text, const text_object::position_t& vp)
 {
-	const text_object& txt;
-
-	overlaps_object(const text_object& t)
-		: txt(t)
-	{}
-
-	// special case for texts
-	bool operator () (const text_object& obj) const
-	{
-		// a text does not overlap itself
-		if (&txt == &obj)
-			return false;
-
-		return overlap_text_text(txt, obj);
-	}
-
-	// more generic instance for other, circular objects
-	template <class Object>
-	bool operator () (const Object& obj) const
-	{
-		return overlap_text_object(txt, obj);
-	}
-};
-
-bool storage::text_overlaps_object(const text_object& text)
-{
-	if (std::find_if(stars.begin(), stars.end(), overlaps_object(text)) != stars.end())
+	if (std::find_if(stars.begin(), stars.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != stars.end())
 		return true;
 
-	if (std::find_if(galaxies.begin(), galaxies.end(), overlaps_object(text)) != galaxies.end())
+	if (std::find_if(galaxies.begin(), galaxies.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != galaxies.end())
 	// {
 	// 	log_stream << "galaxy" << endl;
 		return true;
 	// }
 
-	if (std::find_if(nebulas.begin(), nebulas.end(), overlaps_object(text)) != nebulas.end())
+	if (std::find_if(nebulas.begin(), nebulas.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != nebulas.end())
 	// {
 	// 	log_stream << "nebula" << endl;
 		return true;
 	// }
 
-	if (std::find_if(planetary_nebulas.begin(), planetary_nebulas.end(), overlaps_object(text)) != planetary_nebulas.end())
+	if (std::find_if(planetary_nebulas.begin(), planetary_nebulas.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != planetary_nebulas.end())
 	// {
 	// 	log_stream << "p. nebula" << endl;
 		return true;
 	// }
 
-	if (std::find_if(open_clusters.begin(), open_clusters.end(), overlaps_object(text)) != open_clusters.end())
+	if (std::find_if(open_clusters.begin(), open_clusters.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != open_clusters.end())
 	// {
 	// 	log_stream << "open cluster" << endl;
 		return true;
 	// }
 
-	if (std::find_if(globular_clusters.begin(), globular_clusters.end(), overlaps_object(text)) != globular_clusters.end())
+	if (std::find_if(globular_clusters.begin(), globular_clusters.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != globular_clusters.end())
 	// {
 	// 	log_stream << "globular cluster" << endl;
 		return true;
 	// }
 
 	// also the fixed texts
-	if (std::find_if(fixed_texts.begin(), fixed_texts.end(), overlaps_object(text)) != fixed_texts.end())
+	if (std::find_if(fixed_texts.begin(), fixed_texts.end(), [&](auto& o) { return overlap_text_text(vp, o.valid_positions.front()); }) != fixed_texts.end())
 	// {
 	// 	log_stream << "fixed text" << endl;
 		return true;
 	// }
 
 	// custom objects
-	if (std::find_if(custom_objects.begin(), custom_objects.end(), overlaps_object(text)) != custom_objects.end())
+	if (std::find_if(custom_objects.begin(), custom_objects.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != custom_objects.end())
 	// {
 	// 	log_stream << "globular cluster" << endl;
 		return true;

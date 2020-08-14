@@ -28,7 +28,7 @@ std::vector<text_object>::iterator text_object::position_selector::overlaps_anot
 	return store->get_overlapping_text(*parent);
 }
 
-bool text_object::overlaps_alinman(const valid_position_t* on_pos) const
+bool text_object::overlaps_alinman(const position_t& on_pos) const
 {
 	// the asterism lines
 	point startPt, endPt, cornerPt;
@@ -52,47 +52,47 @@ bool text_object::overlaps_alinman(const valid_position_t* on_pos) const
 		{
 			theta = calc_theta(bound_to, cornerPt);
 
-			switch (on_pos->position_code)
+			switch (on_pos.position_code)
 			{
 			case position_code_e::right:
-				startPt = on_pos->left_down_bound;
-				endPt.alpha = on_pos->left_down_bound.alpha;
-				endPt.r = on_pos->right_up_bound.r;
+				startPt = on_pos.left_down_bound;
+				endPt.alpha = on_pos.left_down_bound.alpha;
+				endPt.r = on_pos.right_up_bound.r;
 				break;
 			case position_code_e::left:
-				startPt = on_pos->right_up_bound;
-				endPt.alpha = on_pos->right_up_bound.alpha;
-				endPt.r = on_pos->left_down_bound.r;
+				startPt = on_pos.right_up_bound;
+				endPt.alpha = on_pos.right_up_bound.alpha;
+				endPt.r = on_pos.left_down_bound.r;
 				break;
 			case position_code_e::up:
-				startPt.alpha = on_pos->right_up_bound.alpha;
-				startPt.r = on_pos->left_down_bound.r;
-				endPt = on_pos->left_down_bound;
+				startPt.alpha = on_pos.right_up_bound.alpha;
+				startPt.r = on_pos.left_down_bound.r;
+				endPt = on_pos.left_down_bound;
 				break;
 			case position_code_e::down:
-				startPt.alpha = on_pos->left_down_bound.alpha;
-				startPt.r = on_pos->right_up_bound.r;
-				endPt = on_pos->right_up_bound;
+				startPt.alpha = on_pos.left_down_bound.alpha;
+				startPt.r = on_pos.right_up_bound.r;
+				endPt = on_pos.right_up_bound;
 				break;
 			case position_code_e::right_up:
-				endPt.alpha = on_pos->left_down_bound.alpha;
-				endPt.r = on_pos->right_up_bound.r;
-				startPt.alpha = on_pos->right_up_bound.alpha;
-				startPt.r = on_pos->left_down_bound.r;
+				endPt.alpha = on_pos.left_down_bound.alpha;
+				endPt.r = on_pos.right_up_bound.r;
+				startPt.alpha = on_pos.right_up_bound.alpha;
+				startPt.r = on_pos.left_down_bound.r;
 				break;
 			case position_code_e::right_down:
-				startPt = on_pos->right_up_bound;
-				endPt = on_pos->left_down_bound;
+				startPt = on_pos.right_up_bound;
+				endPt = on_pos.left_down_bound;
 				break;
 			case position_code_e::left_up:
-				startPt = on_pos->left_down_bound;
-				endPt = on_pos->right_up_bound;
+				startPt = on_pos.left_down_bound;
+				endPt = on_pos.right_up_bound;
 				break;
 			case position_code_e::left_down:
-				startPt.alpha = on_pos->left_down_bound.alpha;
-				startPt.r = on_pos->right_up_bound.r;
-				endPt.alpha = on_pos->right_up_bound.alpha;
-				endPt.r = on_pos->left_down_bound.r;
+				startPt.alpha = on_pos.left_down_bound.alpha;
+				startPt.r = on_pos.right_up_bound.r;
+				endPt.alpha = on_pos.right_up_bound.alpha;
+				endPt.r = on_pos.left_down_bound.r;
 				break;
 			}
 
@@ -109,19 +109,19 @@ bool text_object::overlaps_alinman(const valid_position_t* on_pos) const
 	return false;
 }
 
-bool text_object::overlaps_declination(const valid_position_t* on_pos) const
+bool text_object::overlaps_declination(const position_t& pos) const
 {
 	double dec_step = cfg->get_map_radius() / cfg->get_max_pole_distance() * 10;
 	for (double dec = dec_step; dec <= cfg->get_map_radius(); dec += dec_step)
 	{
-		if (on_pos->left_down_bound.r - dec > 0  &&  on_pos->right_up_bound.r - dec < 0)
+		if (pos.left_down_bound.r - dec > 0  &&  pos.right_up_bound.r - dec < 0)
 			return true;
 	}
 
 	return false;
 }
 
-bool text_object::overlaps_meridian(const valid_position_t* on_pos) const
+bool text_object::overlaps_meridian(const position_t& on_pos) const
 {
 	size_t cnt = 0;
 	const double div12limit = 3 / cfg->get_max_pole_distance() * canvas->get_extent();
@@ -129,16 +129,16 @@ bool text_object::overlaps_meridian(const valid_position_t* on_pos) const
 	const double restLimit = 30 / cfg->get_max_pole_distance() * canvas->get_extent();
 	for (double ra = 0; ra < 2 * pi; ra += pi / 24, ++cnt)
 	{
-		if (is_in_angle(on_pos->position.alpha, on_pos->position.alpha + on_pos->angle, ra))
+		if (is_in_angle(on_pos.position.alpha, on_pos.position.alpha + on_pos.angle, ra))
 		{
 			if (cnt % 12 == 0)
 			{
-				if (on_pos->right_up_bound.r > div12limit)
+				if (on_pos.right_up_bound.r > div12limit)
 					return true;
 			} else if (cnt % 2 == 0) {
-				if (on_pos->right_up_bound.r > div2limit)
+				if (on_pos.right_up_bound.r > div2limit)
 					return true;
-			} else if (on_pos->right_up_bound.r > restLimit) {
+			} else if (on_pos.right_up_bound.r > restLimit) {
 				return true;
 			}
 		}
@@ -147,10 +147,10 @@ bool text_object::overlaps_meridian(const valid_position_t* on_pos) const
 	return false;
 }
 
-void text_object::init_position(std::vector<valid_position_t>::iterator& p_position)
+void text_object::init_position(position_t& pos)
 {
 	double objectR = bound_to.r;
-	p_position->position = bound_to;	// gets corrected later on
+	pos.position = bound_to;	// gets corrected later on
 
 	// the height of the text with descent in mind
 	double actual_height;
@@ -163,91 +163,90 @@ void text_object::init_position(std::vector<valid_position_t>::iterator& p_posit
 		actual_height -= height * 0.25;
 
 	// correct the position
-	switch (p_position->position_code)
+	switch (pos.position_code)
 	{
 	case position_code_e::right:
 	case position_code_e::left:
-		p_position->position.r += actual_height / 2;
+		pos.position.r += actual_height / 2;
 		if (!has_descent())
-			p_position->position.r += height * .25;
+			pos.position.r += height * .25;
 
-		update_angle(p_position);
+		pos.update_angle(*this);
 
-		if (p_position->position_code == position_code_e::right)
-			p_position->position.alpha += cut_angle(bound_diameter + cfg->get_text_distance(), objectR);
+		if (pos.position_code == position_code_e::right)
+			pos.position.alpha += cut_angle(bound_diameter + cfg->get_text_distance(), objectR);
 		else
-			p_position->position.alpha -= cut_angle(bound_diameter + cfg->get_text_distance(), objectR) + p_position->angle;
+			pos.position.alpha -= cut_angle(bound_diameter + cfg->get_text_distance(), objectR) + pos.angle;
 
 		break;
 	case position_code_e::up:
-		p_position->position.r -= bound_diameter + cfg->get_text_distance();
+		pos.position.r -= bound_diameter + cfg->get_text_distance();
 		if (!has_descent())
-			p_position->position.r += height * 0.25;
+			pos.position.r += height * 0.25;
 
-		update_angle(p_position);
+		pos.update_angle(*this);
 		
-		p_position->position.alpha -= p_position->angle / 2;
+		pos.position.alpha -= pos.angle / 2;
 
 		break;
 	case position_code_e::down:
-		p_position->position.r += bound_diameter + cfg->get_text_distance() + height;
-		update_angle(p_position);
-		p_position->position.alpha -= p_position->angle / 2;
+		pos.position.r += bound_diameter + cfg->get_text_distance() + height;
+		pos.update_angle(*this);
+		pos.position.alpha -= pos.angle / 2;
 
 		break;
 	case position_code_e::right_up:
 	case position_code_e::left_up:
-		p_position->position.r -= (bound_diameter + cfg->get_text_distance()) / sq_root;
+		pos.position.r -= (bound_diameter + cfg->get_text_distance()) / sq_root;
 		if (!has_descent())
-			p_position->position.r += height * 0.25;
+			pos.position.r += height * 0.25;
 
-		update_angle(p_position);
+		pos.update_angle(*this);
 
-		if (p_position->position_code == position_code_e::right_up)
-			p_position->position.alpha += cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR);
+		if (pos.position_code == position_code_e::right_up)
+			pos.position.alpha += cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR);
 		else
-			p_position->position.alpha -= cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR) + p_position->angle;
+			pos.position.alpha -= cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR) + pos.angle;
 
 		break;
 	case position_code_e::right_down:
 	case position_code_e::left_down:
-		p_position->position.r += (bound_diameter + cfg->get_text_distance()) / sq_root + height;
+		pos.position.r += (bound_diameter + cfg->get_text_distance()) / sq_root + height;
 
-		update_angle(p_position);
+		pos.update_angle(*this);
 
-		if (p_position->position_code == position_code_e::right_down)
-			p_position->position.alpha += cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR);
+		if (pos.position_code == position_code_e::right_down)
+			pos.position.alpha += cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR);
 		else
-			p_position->position.alpha -= cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR) + p_position->angle;
+			pos.position.alpha -= cut_angle((bound_diameter + cfg->get_text_distance()) / sq_root, objectR) + pos.angle;
 
 		break;
 	default:
 		assert(false);
 	}
 
-	update_bounds(p_position);
+	pos.update_bounds(*this);
 }
-
+/*
 void text_object::set_position_direct(const point& p)
 {
-	/*
-	_current_pos = _valid_positions;
-	_current_pos->position_code = position_code_e::other;
-	_current_pos->position = p;
-	_end_cache = _current_pos + 1;
-	update_angle(_current_pos);
-	update_bounds(_current_pos);
-	*/
-}
+	valid_position_t valid_pos;
+	valid_pos.position_code = position_code_e::other;
+	valid_pos.position = p;
+	valid_pos.update_angle(*text, p);
+	valid_pos.update_bounds(*text, p);
 
+	valid_positions.push_back(valid_pos);
+}
+*/
 void text_object::connect() const
 {
 	// draw a small frame for the text, and connect it
 	// with the object the text is bound to
 
 	point start, end;
-	point textLD = _current_pos->left_down_bound;
-	point textRU = _current_pos->right_up_bound;
+	point textLD = curr_pos().left_down_bound;
+	point textRU = curr_pos().right_up_bound;
 
 	// move the bounds a bit
 	textLD.r += 0.1;
@@ -264,7 +263,7 @@ void text_object::connect() const
 
 	canvas->set_pen_width(0.1);
 
-	switch (_current_pos->position_code)
+	switch (curr_pos().position_code)
 	{
 	case position_code_e::right:
 		end.r = textRU.r;
@@ -286,21 +285,21 @@ void text_object::connect() const
 	case position_code_e::up:
 		end = start = textLD;
 		start.r = end.r = textLD.r - actual_height * 0.05;
-		start.alpha += _current_pos->angle / 3;
-		end.alpha += _current_pos->angle * 0.67;
+		start.alpha += curr_pos().angle / 3;
+		end.alpha += curr_pos().angle * 0.67;
 		canvas->line(start, end);
 
-		start.alpha = textLD.alpha + _current_pos->angle / 2;
+		start.alpha = textLD.alpha + curr_pos().angle / 2;
 
 		break;
 	case position_code_e::down:
 		end = start = textLD;
 		start.r = end.r = textRU.r + actual_height * 0.1;
-		start.alpha += _current_pos->angle / 3;
-		end.alpha += _current_pos->angle * 0.67;
+		start.alpha += curr_pos().angle / 3;
+		end.alpha += curr_pos().angle * 0.67;
 		canvas->line(start, end);
 
-		start.alpha = textLD.alpha + _current_pos->angle / 2;
+		start.alpha = textLD.alpha + curr_pos().angle / 2;
 
 		break;
 	case position_code_e::right_up:
@@ -350,7 +349,7 @@ void text_object::connect() const
 		break;
 	}
 
-	canvas->line(start, _current_pos->position);
+	canvas->line(start, curr_pos().position);
 }
 
 void text_object::print() const
@@ -358,26 +357,49 @@ void text_object::print() const
 	canvas->draw(*this);
 }
 
-void text_object::update_angle(std::vector<valid_position_t>::iterator& on_pos)
+void text_object::position_t::update_angle(text_object& text)
 {
 	// cache the angle
-	on_pos->angle = 0.0;
-	for (size_t chrCnt = 0; text[chrCnt] != 0; ++chrCnt)
-		on_pos->angle += char_angle(text[chrCnt], height, on_pos->position.r - height, is_greek);
+	angle = 0.0;
+	for (size_t chrCnt = 0; text.text[chrCnt] != 0; ++chrCnt)
+		angle += char_angle(text.text[chrCnt], text.height, position.r - text.height, text.is_greek);
 }
 
-void text_object::update_bounds(valid_position_t* on_pos)
+void text_object::position_t::update_bounds(text_object& text)
 {
-	on_pos->left_down_bound = on_pos->right_up_bound = on_pos->position;
-	if (!has_descent())
-		on_pos->left_down_bound.r -= height * .25;
+	left_down_bound = right_up_bound = position;
+	if (!text.has_descent())
+		left_down_bound.r -= text.height * .25;
 
-	on_pos->right_up_bound.alpha += on_pos->angle;
-	on_pos->right_up_bound.r -= height;
-	if (!has_upcent())
-		on_pos->right_up_bound.r += height * .25;
+	right_up_bound.alpha += angle;
+	right_up_bound.r -= text.height;
+	if (!text.has_upcent())
+		right_up_bound.r += text.height * .25;
 }
 
+/*
+void text_object::update_angle(valid_position_t& pos)
+{
+	// cache the angle
+	pos.angle = 0.0;
+	for (size_t chrCnt = 0; text[chrCnt] != 0; ++chrCnt)
+		pos.angle += char_angle(text[chrCnt], height, pos.position.r - height, is_greek);
+}
+
+void text_object::update_bounds(valid_position_t& pos)
+{
+	pos.left_down_bound = pos.right_up_bound = pos.position;
+	if (!has_descent())
+		pos.left_down_bound.r -= height * .25;
+
+	pos.right_up_bound.alpha += pos.angle;
+	pos.right_up_bound.r -= height;
+	if (!has_upcent())
+		pos.right_up_bound.r += height * .25;
+}
+*/
+
+/*
 struct cached_overlap_text_text
 {
 	struct text_overlap_cache_t
@@ -395,11 +417,11 @@ struct cached_overlap_text_text
 					&&  text1_position == rhs.text1_position  &&  text1_position == rhs.text1_position;
 		}
 
-		void build_from_texts(const text_object& text1, const text_object& text2)
+		void build_from_texts(text_object::position_selector& text1, text_object::position_selector& text2)
 		{
-			text1_index = &text1 - &store->texts.front();
-			text1_position = text1.get_current_position_index();
-			text2_index = &text2 - &store->texts.front();
+			text1_index = text1.parent - &store->texts.front();
+			text1_position = text1.parent->curr_pos -> text1.parent->valid_positions();
+			text2_index = text2.parent - &store->texts.front();
 			text2_position = text2.get_current_position_index();
 
 			if (text1_index > text2_index)
@@ -457,71 +479,61 @@ struct cached_overlap_text_text
 };
 
 cached_overlap_text_text::text_overlaps_cache_t cached_overlap_text_text::text_overlaps_cache;
-
-std::string _report_hash()
-{
-	/*
-	char message[100];
-
-	sprintf(message, "hash report: buckets=%i  size=%i  size/bucket=%f",
-						cached_overlap_text_text::text_overlaps_cache.bucket_count(),
-						cached_overlap_text_text::text_overlaps_cache.size(), 
-						(double) cached_overlap_text_text::text_overlaps_cache.size() / cached_overlap_text_text::text_overlaps_cache.bucket_count());
-	*/
-
-	return "todo !!!";
-}
+*/
 
 bool text_object::find_valid_positions()
 {
-	_current_pos = _valid_positions;
+	// clear the default position
+	valid_positions.clear();
+
+	position_t vp;
+
 	for (size_t curr_pos_code = (size_t) position_code_e::right; curr_pos_code < (size_t) position_code_e::other; ++curr_pos_code)
 	{
 		// set the position code
-		_current_pos->position_code = (position_code_e)curr_pos_code;
+		vp.position_code = (position_code_e)curr_pos_code;
 
 		// set the boundings & angles
-		init_position(_current_pos);
+		init_position(vp);
 
 		// are we overlapping any object?
-		if (store->text_overlaps_object(*this))
-			continue;	// position invalid - skip it
+		if (store->text_overlaps_object(*this, vp))
+		{
+			continue;	// position invalid - drop it
+		}
 
 		// no object overlaps -- set the overlap flags
-		_current_pos->overlaps[alinman_overlap] = overlaps_alinman(_current_pos);
-		_current_pos->overlaps[meridian_overlap] = overlaps_meridian(_current_pos);
-		_current_pos->overlaps[declination_overlap] = overlaps_declination(_current_pos);
-		_current_pos->overlaps[out_of_bounds] = _current_pos->right_up_bound.r > cfg->get_map_radius();
+		vp.overlaps[alinman_overlap] = overlaps_alinman(vp);
+		vp.overlaps[meridian_overlap] = overlaps_meridian(vp);
+		vp.overlaps[declination_overlap] = overlaps_declination(vp);
+		vp.overlaps[out_of_bounds] = vp.right_up_bound.r > cfg->get_map_radius();
 
 		// set the grade value
 		int grade = 0;
 
 		// if the text is out of the map boundaries
-		if (_current_pos->overlaps[out_of_bounds])
+		if (vp.overlaps[out_of_bounds])
 			grade -= 10;
 
 		// circle through the declination circles
-		if (_current_pos->overlaps[declination_overlap])
+		if (vp.overlaps[declination_overlap])
 			grade -= 8;
 
 		// alinmans
-		if (_current_pos->overlaps[alinman_overlap])
+		if (vp.overlaps[alinman_overlap])
 			grade -= 4;
 
 		// the meridians
-		if (_current_pos->overlaps[meridian_overlap])
+		if (vp.overlaps[meridian_overlap])
 			grade -= 2;
 
-		_current_pos->grade = grade;
-		_current_pos->is_perfect = (grade == 0);
+		vp.grade = grade;
+		vp.is_perfect = (grade == 0);
 
-		++_current_pos;		// use the next cache slot
+		valid_positions.push_back(vp);
 	}
 
-	_end_cache = _current_pos;
-	_current_pos = _valid_positions;
-
-	return _end_cache != _valid_positions;
+	return !valid_positions.empty();
 }
 
 log_t& operator << (log_t& o, const point& t)
@@ -546,8 +558,9 @@ log_t& operator << (log_t& o, const text_object& t)
 
 log_t& operator << (log_t& o, const group_t& grp)
 {
-	group_t::texts_container_t::const_iterator i = grp.texts.begin();
-	while (i != grp.texts.end())
+	o << "------ group with " << grp.size() << " texts\n";
+	group_t::const_iterator i = grp.begin();
+	while (i != grp.end())
 	{
 		o << **i << "\n";
 		++i;
@@ -640,10 +653,12 @@ struct text_in_group_t		// the name should be changed
 		: txt_iter(ti)
 	{}
 
+	/*
 	void add_overlap(text_object::position_selector& overlap_pos_iter)
 	{
 		all_overlaps.push_back(overlaps_another_t(txt_iter->get_current_position_index(), overlap_pos_iter));
 	}
+	*/
 
 	// ***************************
 	// statistic data for the text
@@ -661,7 +676,7 @@ struct text_in_group_t		// the name should be changed
 	void calc_stats()
 	{
 		// set the total number of positions
-		total_pos_cnt = txt_iter->get_valid_pos_num();
+		total_pos_cnt = txt_iter->valid_positions.size();
 
 		// get indecies of overlap positions
 		std::set<size_t> overlap_pos;
@@ -693,9 +708,7 @@ struct text_in_group_t		// the name should be changed
 		std::vector<size_t>::iterator free_pos_iter = free_pos.begin();
 		while (free_pos_iter != free_pos.end())
 		{
-			txt_iter->set_position_index(*free_pos_iter);
-
-			if (txt_iter->is_position_perfect())
+			if (txt_iter->valid_positions[*free_pos_iter].is_perfect)
 			{
 				perfect_pos.push_back(*free_pos_iter);
 				++perfect_pos_cnt;
@@ -752,27 +765,21 @@ void fill_stats(std::vector<text_in_group_t>& group)
 		while (in_text_iter != group.end())
 		{
 			// iterate all the posible positions of these two texts
-			text_object::position_selector out_pos = out_text_iter->txt_iter->begin();
-			text_object::position_selector in_pos;
-			while (out_pos != out_text_iter->txt_iter->end())
+			for (auto& out_vp: out_text_iter->txt_iter->valid_positions)
 			{
-				in_pos = in_text_iter->txt_iter->begin();
-				while (in_pos != in_text_iter->txt_iter->end())
+				for (auto& in_vp : in_text_iter->txt_iter->valid_positions)
 				{
 					// do they overlap?
-					if (overlap_text_text(*out_pos, *in_pos))
+					if (overlap_text_text(out_vp, in_vp))
 					{
 						// add the info about overlaps to the all_overlaps
 						// container of the two texts
-						
-						out_text_iter->add_overlap(in_pos);
-						in_text_iter->add_overlap(out_pos);
+
+						assert(false);
+						//!!! out_text_iter->add_overlap(in_pos);
+						//!!! in_text_iter->add_overlap(out_pos);
 					}
-
-					++in_pos;
 				}
-
-				++out_pos;
 			}
 
 			++in_text_iter;
@@ -790,6 +797,7 @@ void fill_stats(std::vector<text_in_group_t>& group)
 	}
 }
 
+/*
 struct get_position_grate_t
 {
 	typedef text_object::position_selector		argument_type;
@@ -800,17 +808,7 @@ struct get_position_grate_t
 		return (*arg).get_pos_grade();
 	}
 };
-
-struct set_position_t
-{
-	typedef text_object::position_selector		argument_type;
-	typedef void								result_type;
-
-	result_type operator () (argument_type& arg) const
-	{
-		*arg;
-	}
-};
+*/
 
 std::string get_temp_filename()
 {
@@ -849,6 +847,7 @@ void load(matrix<T>& m, const std::string& fname)
 	out.read((char*)&*m._data.begin(), sizeof(T) * m._data.size());
 }
 
+/*
 void optimize_text_group(group_t& grp)
 {
 	// build a matrix of the texts that fall into the criteria
@@ -856,7 +855,7 @@ void optimize_text_group(group_t& grp)
 
 	// copy all the texts into a vector of text_in_group_t
 	std::vector<text_in_group_t> group;
-	for (auto& txt : grp.texts)
+	for (auto& txt : grp)
 		group.push_back(text_in_group_t(txt));
 
 	fill_stats(group);
@@ -864,3 +863,4 @@ void optimize_text_group(group_t& grp)
 	// order for processing: by perfect then by free then by valid
 	std::sort(group.begin(), group.end(), text_in_group_t::process_order_t());
 }
+*/

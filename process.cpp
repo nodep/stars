@@ -35,7 +35,7 @@ void process::coordinate_net()
 		canvas->stroke_circle(point(0, 0), dec * canvas->get_extent() / cfg->get_max_pole_distance());
 	}
 
-	// draw the last bounding circle if if is not in the net
+	// draw the last bounding circle if it is not in the net
 	if ((int(cfg->get_max_pole_distance()) % 10) != 0)
 	{
 		canvas->set_pen_direct(thin_solid);
@@ -78,6 +78,7 @@ void process::coordinate_net()
 	// print the values of RA
 	char tmp_txt[5];
 	text_object txt;
+	txt.valid_positions.push_back(text_object::position_t());
 	double chr_angle = char_angle('0', cfg->get_ra_text_height(), canvas->get_extent() + 1, false);
 	int hour;
 	for (hour = 0; hour < 24; ++hour)
@@ -87,7 +88,7 @@ void process::coordinate_net()
 
 		txt.text = tmp_txt;
 		txt.height = cfg->get_ra_text_height();
-		txt.set_position_direct(point(canvas->get_extent() + cfg->get_ra_text_height() + 1, hour2rad(hour) - (hour > 9 ? chr_angle : chr_angle / 2)));
+		txt.valid_positions.back().set_direct(point(canvas->get_extent() + cfg->get_ra_text_height() + 1, hour2rad(hour) - (hour > 9 ? chr_angle : chr_angle / 2)), txt);
 
 		// print the text
 		txt.print();
@@ -98,8 +99,13 @@ void process::declination_numbers()
 {
 	text_object txt;
 	txt.height = cfg->get_decl_text_height();
+	txt.valid_positions.push_back(text_object::position_t());
+
+	text_object::position_t& vp(txt.valid_positions.front());
+
 	point text_pos;
 	double text_dist = txt.height / 3;
+
 	int numbers = 80;
 	for (double dec = DEC_STEP; dec < cfg->get_max_pole_distance(); dec += DEC_STEP)
 	{
@@ -112,11 +118,13 @@ void process::declination_numbers()
 		numbers -= 10;
 
 		txt.text = buff;
-		txt.set_position_direct(text_pos);
+		vp.set_direct(text_pos, txt);
 
 		// see if the text overlaps any other text
-		if (!store->text_overlaps_object(txt)  &&  store->get_overlapping_text(txt) == store->texts.end())
+		if (!store->text_overlaps_object(txt, vp) && store->get_overlapping_text(txt) == store->texts.end())
+		{
 			txt.print();
+		}
 	}
 }
 
@@ -966,6 +974,7 @@ void process::fixed_texts()
 
 	char p[250];
 	text_object text;
+	text.valid_positions.push_back(text_object::position_t());
 	double angle;
 	while (true)
 	{
@@ -987,7 +996,7 @@ void process::fixed_texts()
 		text.text = p + 21;
 
 		pos_pt = pos_coord.conv2point();
-		text.set_position_direct(pos_pt);
+		text.valid_positions.front().set_direct(pos_pt, text);
 
 		angle = text.valid_positions.front().angle;
 
@@ -1001,7 +1010,7 @@ void process::fixed_texts()
 			break;
 		}
 
-		text.set_position_direct(pos_pt);
+		text.valid_positions.front().set_direct(pos_pt, text);
 
 		store->fixed_texts.push_back(text);
 	}
@@ -1208,6 +1217,57 @@ void process::init_text_positions()
 
 typedef std::pair<std::vector<text_object>::iterator, std::vector<text_object>::iterator> connection_t;
 
+struct overlap_t
+{
+	size_t	txt1;
+	size_t	pos1;
+
+	size_t	txt2;
+	size_t	pos2;
+
+	overlap_t(const text_object& t1, const text_object::position_t& p1, const text_object& t2, const text_object::position_t& p2)
+		:	txt1(&t1 - &store->texts.front()),
+			pos1(&p1 - &t1.valid_positions.front()),
+			txt2(&t2 - &store->texts.front()),
+			pos2(&p2 - &t2.valid_positions.front())
+	{
+		assert(pos1 < 8  &&  pos2 < 8  && txt1 < 10000 && txt2 < 10000);
+	}
+
+	overlap_t(const size_t t1, const size_t p1, const size_t t2, const size_t p2)
+	:	txt1(t1),
+		pos1(p1),
+		txt2(t2),
+		pos2(p2)
+	{
+		assert(pos1 < 8 && pos2 < 8 && txt1 < 10000 && txt2 < 10000);
+	}
+
+	bool operator == (const overlap_t& rhs) const
+	{
+		return		txt1 == rhs.txt1
+				&&	pos1 == rhs.pos1
+				&&	txt2 == rhs.txt2
+				&&	pos2 == rhs.pos2;
+	}
+	/*
+	overlap_t()
+		: txt1(0), pos1(0), txt2(0), pos2(0)
+	{}
+	*/
+};
+
+namespace std
+{
+	template<> struct hash<overlap_t>
+	{
+		std::size_t operator()(overlap_t const& o) const noexcept
+		{
+			return (o.txt1 << 48) | (o.pos1 << 32) | (o.txt2 << 16) | o.txt2;
+		}
+	};
+}
+
 void process::find_text_positions()
 {
 	stopwatch_t swatch;
@@ -1215,36 +1275,127 @@ void process::find_text_positions()
 
 	log_stream << "finding text overlap positions...\n";
 
-	std::vector<connection_t> connections;
+	std::unordered_set<overlap_t> overlaps_hash;
+	std::vector<group_t> groups;
 
-	// iterate through every pair of texts on the map
+	// iterate through every pair of texts on the map, and build hash tables of overlapping texts,
+	// and groups of mutually overlapping texts
 	for (auto out_iter = store->texts.begin(); out_iter < store->texts.end(); out_iter++)
 	{
 		for (auto in_iter = out_iter + 1; in_iter < store->texts.end(); in_iter++)
 		{
 			// iterate through all the positions for these two texts
 			bool found = false;
-			for (auto& out_pos_sel: text_object::position_selector(out_iter))
+			for (auto& out_vp: out_iter->valid_positions)
 			{
-				for (auto& in_pos_sel : text_object::position_selector(in_iter))
+				for (auto& in_vp: in_iter->valid_positions)
 				{
-					if (overlap_text_text(out_pos_sel, in_pos_sel))
+					if (overlap_text_text(out_vp, in_vp))
 					{
-						out_pos_sel.parent->has_overlaps = in_pos_sel.parent->has_overlaps = true;
+						// we don't know in which order the overlap_t is going to be initialized:
+						// txt1, txt2   or   txt2, txt1
+						// so add for both combinations
+						overlaps_hash.insert(overlap_t(*out_iter, out_vp, *in_iter, in_vp));
+						overlaps_hash.insert(overlap_t(*in_iter, in_vp, *out_iter, out_vp));
 
-						connections.push_back(connection_t(out_iter, in_iter));
-						found = true;
-						break;
+						out_iter->has_overlaps = in_iter->has_overlaps = true;
+
+						// add to groups of mutally overlapping texts
+						bool out_found = false, in_found = false;
+						for (auto& grp : groups)
+						{
+							for (const auto& gtxt : grp)
+							{
+								out_found |= (gtxt == out_iter);
+								in_found |= (gtxt == in_iter);
+							}
+
+							if (out_found  &&  !in_found)
+								grp.push_back(in_iter);
+							else if (in_found  &&  !out_found)
+								grp.push_back(out_iter);
+
+							if (out_found || in_found)
+								break;
+						}
+
+						if (!out_found && !in_found)
+						{
+							groups.push_back({ in_iter, out_iter });
+						}
 					}
-
-					++in_iter;
 				}
-
-				++out_iter;
 			}
 		}
 	}
 
+	log_stream << "found " << overlaps_hash.size() / 2 << " overlaps\n";
+
+	for (const auto& grp : groups)
+		log_stream << grp;
+
+	for (auto& grp : groups)
+	{
+		std::vector<std::vector<uint8_t>> combinations;
+		std::vector<int> grades;
+
+		log_stream << "texts " << grp.size() << '\n';
+		size_t n = 0;
+		for (auto& txt_iter : grp)
+		{
+			log_stream << "text " << n++ << '\n';
+			if (combinations.empty())
+			{
+				for (uint8_t pos = 0; pos < txt_iter->valid_positions.size(); pos++)
+				{
+					combinations.push_back(std::vector<uint8_t>(1, pos));
+					grades.push_back(txt_iter->valid_positions[pos].grade);
+				}
+			}
+			else
+			{
+				std::vector<std::vector<uint8_t>> new_combs;
+				std::vector<int> new_grades;
+
+				for (auto& cmb : combinations)
+				{
+					for (auto& in_pos : cmb)
+					{
+						for (uint8_t out_pos = 0; out_pos < txt_iter->valid_positions.size(); out_pos++)
+						{
+							overlap_t o(&*txt_iter - &store->texts.front(), out_pos,
+								&in_pos - &cmb.front(), in_pos);
+
+							if (overlaps_hash.find(o) == overlaps_hash.end())
+							{
+								std::vector<uint8_t> new_cmb(cmb);
+								new_cmb.push_back(out_pos);
+
+								new_combs.push_back(new_cmb);
+								new_grades.push_back(grades[&cmb - &combinations.front()] + txt_iter->valid_positions[out_pos].grade);
+							}
+						}
+					}
+				}
+
+				combinations.swap(new_combs);
+				grades.swap(new_grades);
+
+				int max = grades[0], min = grades[0];
+				for (int g : grades)
+				{
+					if (max < g)	max = g;
+					if (min > g)	min = g;
+				}
+
+				log_stream << "min " << min << " max " << max << "\n";
+				log_stream << "combinations " << combinations.size() << "\n";
+			}
+		}
+	}
+
+
+	/*
 	// build groups of directly/indirectly connected texts
 	std::vector<group_t> groups;
 	std::vector<connection_t>::iterator conn_iter = connections.begin();
@@ -1302,24 +1453,6 @@ void process::find_text_positions()
 			groups.erase(groups.begin() + (second_found_in - &groups.front()));
 		}
 
-		/*
-		// dbg
-		log_stream << "------------------------------------------\n";
-		std::vector<group_t>::iterator giter(groups.begin());
-		while (giter != groups.end())
-		{
-			log_stream << "##########################################\n";
-			group_t::texts_container_t::iterator titer(giter->texts.begin());
-			while (titer != giter->texts.end())
-			{
-				log_stream << (*titer)->text << "\n";
-				++titer;
-			}
-
-			++giter;
-		}
-		*/
-
 		++conn_iter;
 	}
 
@@ -1333,7 +1466,6 @@ void process::find_text_positions()
 	// !!! dbg
 
 	log_stream << "finding valid text positions for groups...\n";
-	/*
 	text_group_processor_t()(groups[28]);
 	text_group_processor_t()(groups.front());
 	group_t::texts_container_t::iterator ti = groups.front().texts.begin();
@@ -1343,7 +1475,6 @@ void process::find_text_positions()
 		++ti;
 	}
 	return;
-	*/
 
 	std::for_each(groups.begin(), groups.end(), optimize_text_group);
 	//std::for_each(groups.begin(), groups.end(), text_group_processor_t());
@@ -1366,7 +1497,7 @@ void process::find_text_positions()
 			text_object::position_selector pos_iter(txt_iter);
 
 			// init the first position
-			int best_grade = pos_iter->get_pos_grade();
+			int best_grade = (*pos_iter).get_pos_grade();
 			text_object::position_selector best_pos_iter = pos_iter;
 
 			++pos_iter;
@@ -1388,6 +1519,7 @@ void process::find_text_positions()
 
 		++txt_iter;
 	}
+	*/
 }
 
 void process::radiants()
