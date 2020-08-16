@@ -227,18 +227,7 @@ void text_object::init_position(position_t& pos)
 
 	pos.update_bounds(*this);
 }
-/*
-void text_object::set_position_direct(const point& p)
-{
-	valid_position_t valid_pos;
-	valid_pos.position_code = position_code_e::other;
-	valid_pos.position = p;
-	valid_pos.update_angle(*text, p);
-	valid_pos.update_bounds(*text, p);
 
-	valid_positions.push_back(valid_pos);
-}
-*/
 void text_object::connect() const
 {
 	// draw a small frame for the text, and connect it
@@ -377,109 +366,15 @@ void text_object::position_t::update_bounds(text_object& text)
 		right_up_bound.r += text.height * .25;
 }
 
-/*
-void text_object::update_angle(valid_position_t& pos)
+overlap_t::overlap_t(const text_object& t1, const text_object::position_t& p1, const text_object& t2, const text_object::position_t& p2)
+:	txt1(&t1 - &store->texts.front()),
+	pos1(&p1 - &t1.valid_positions.front()),
+	txt2(&t2 - &store->texts.front()),
+	pos2(&p2 - &t2.valid_positions.front())
 {
-	// cache the angle
-	pos.angle = 0.0;
-	for (size_t chrCnt = 0; text[chrCnt] != 0; ++chrCnt)
-		pos.angle += char_angle(text[chrCnt], height, pos.position.r - height, is_greek);
+	assert(pos1 < 8 && pos2 < 8 && txt1 < 10000 && txt2 < 10000);
 }
 
-void text_object::update_bounds(valid_position_t& pos)
-{
-	pos.left_down_bound = pos.right_up_bound = pos.position;
-	if (!has_descent())
-		pos.left_down_bound.r -= height * .25;
-
-	pos.right_up_bound.alpha += pos.angle;
-	pos.right_up_bound.r -= height;
-	if (!has_upcent())
-		pos.right_up_bound.r += height * .25;
-}
-*/
-
-/*
-struct cached_overlap_text_text
-{
-	struct text_overlap_cache_t
-	{
-		size_t		text1_index;
-		size_t		text1_position;
-		size_t		text2_index;
-		size_t		text2_position;
-
-		bool		result;
-
-		bool operator == (const text_overlap_cache_t& rhs) const
-		{
-			return text1_index == rhs.text1_index  &&  text2_index == rhs.text2_index
-					&&  text1_position == rhs.text1_position  &&  text1_position == rhs.text1_position;
-		}
-
-		void build_from_texts(text_object::position_selector& text1, text_object::position_selector& text2)
-		{
-			text1_index = text1.parent - &store->texts.front();
-			text1_position = text1.parent->curr_pos -> text1.parent->valid_positions();
-			text2_index = text2.parent - &store->texts.front();
-			text2_position = text2.get_current_position_index();
-
-			if (text1_index > text2_index)
-			{
-				std::swap(text1_index, text2_index);
-				std::swap(text1_position, text2_position);
-			}
-		}
-
-		struct hash_func_t
-		{
-			typedef const cached_overlap_text_text::text_overlap_cache_t	argument_type;
-
-			// bitwise distribution of the hash value
-			// text1   text1 				   text2   text2
-			// pos	   index				   pos	   index
-			// 3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0
-			// 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
-			size_t operator () (argument_type& arg) const
-			{
-				return (arg.text1_position << 28) | ((arg.text1_index & 0xfffff) << 16) | (arg.text2_position << 12) | (arg.text2_index & 0xfffff);
-			}
-
-			// comparison for stdext::hast_map
-			bool operator () (argument_type& lhs, argument_type& rhs) const
-			{
-				return operator () (lhs) < operator () (rhs);
-			}
-		};
-	};
-
-	typedef bool				result_type;
-	typedef const text_object&	first_argument_type;
-	typedef const text_object&	second_argument_type;
-
-	typedef std::unordered_set<text_overlap_cache_t, text_overlap_cache_t::hash_func_t> text_overlaps_cache_t;
-
-	static text_overlaps_cache_t text_overlaps_cache;
-
-	result_type operator () (first_argument_type text1, second_argument_type text2)
-	{
-		// look in the cache
-		text_overlap_cache_t srch_element;
-		srch_element.build_from_texts(text1, text2);
-		text_overlaps_cache_t::iterator srch_result = text_overlaps_cache.find(srch_element);
-		if (srch_result != text_overlaps_cache.end())
-			return srch_result->result;
-
-		// insert
-		srch_element.result = overlap_text_text(text1, text2);
-		text_overlaps_cache.insert(srch_element);
-
-		return (bool) srch_element.result;
-	}
-};
-
-cached_overlap_text_text::text_overlaps_cache_t cached_overlap_text_text::text_overlaps_cache;
-*/
 
 bool text_object::find_valid_positions()
 {
@@ -509,23 +404,25 @@ bool text_object::find_valid_positions()
 		vp.overlaps[out_of_bounds] = vp.right_up_bound.r > cfg->get_map_radius();
 
 		// set the grade value
-		int grade = 0;
+		size_t grade = 0;
 
 		// if the text is out of the map boundaries
 		if (vp.overlaps[out_of_bounds])
-			grade -= 10;
+			grade += 20;
 
 		// circle through the declination circles
 		if (vp.overlaps[declination_overlap])
-			grade -= 8;
+			grade += 18;
 
 		// alinmans
 		if (vp.overlaps[alinman_overlap])
-			grade -= 4;
+			grade += 14;
 
 		// the meridians
 		if (vp.overlaps[meridian_overlap])
-			grade -= 2;
+			grade += 12;
+
+		grade += (size_t)curr_pos_code;
 
 		vp.grade = grade;
 		vp.is_perfect = (grade == 0);
@@ -546,7 +443,8 @@ log_t& operator << (log_t& o, const text_object& t)
 {
 	static char row[1000];
 
-	sprintf_s(row, sizeof(row), "%c [%-4s]  pos(alpha, r)=(%7.3f, %6.4f)",
+	sprintf_s(row, sizeof(row), "%5i %c [%-4s]  pos(alpha, r)=(%7.3f, %6.4f)",
+						int(&t - &store->texts.front()),
 						t.is_greek ? 'G' : ' ',
 						t.text.c_str(),
 						t.bound_to.alpha, t.bound_to.r);
@@ -565,6 +463,41 @@ log_t& operator << (log_t& o, const group_t& grp)
 		o << **i << "\n";
 		++i;
 	}
+
+	return o;
+}
+
+const char* pos_name(const text_object::position_code_e pos_code)
+{
+	switch (pos_code)
+	{
+	case text_object::position_code_e::right:			return "right  ";
+	case text_object::position_code_e::left:			return "left   ";
+	case text_object::position_code_e::up:				return "up     ";
+	case text_object::position_code_e::down:			return "down   ";
+	case text_object::position_code_e::right_up:		return "r_up   ";
+	case text_object::position_code_e::right_down:		return "r_down ";
+	case text_object::position_code_e::left_up:			return "l_up   ";
+	case text_object::position_code_e::left_down:		return "l_down ";
+	case text_object::position_code_e::other:			return "other  ";
+	case text_object::position_code_e::invalid:			return "invalid";
+	}
+
+	return "???";
+}
+
+log_t& operator << (log_t& o, const overlap_t& ovp)
+{
+	text_object& t1(store->texts[ovp.txt1]);
+	text_object& t2(store->texts[ovp.txt2]);
+
+	static char row[1000];
+
+	sprintf_s(row, sizeof(row), "%s->%s %s->%s",
+								t1.text.c_str(), pos_name(t1.valid_positions[ovp.pos1].position_code),
+								t2.text.c_str(), pos_name(t2.valid_positions[ovp.pos2].position_code));
+
+	o << row;
 
 	return o;
 }
@@ -797,19 +730,6 @@ void fill_stats(std::vector<text_in_group_t>& group)
 	}
 }
 
-/*
-struct get_position_grate_t
-{
-	typedef text_object::position_selector		argument_type;
-	typedef text_object::position_quality_t		result_type;
-
-	result_type operator () (argument_type& arg) const
-	{
-		return (*arg).get_pos_grade();
-	}
-};
-*/
-
 std::string get_temp_filename()
 {
 	char result[L_tmpnam];
@@ -846,21 +766,3 @@ void load(matrix<T>& m, const std::string& fname)
 	m._data.insert(m._data.end(), m._rows * m._columns, T());
 	out.read((char*)&*m._data.begin(), sizeof(T) * m._data.size());
 }
-
-/*
-void optimize_text_group(group_t& grp)
-{
-	// build a matrix of the texts that fall into the criteria
-	matrix_t the_matrix;
-
-	// copy all the texts into a vector of text_in_group_t
-	std::vector<text_in_group_t> group;
-	for (auto& txt : grp)
-		group.push_back(text_in_group_t(txt));
-
-	fill_stats(group);
-
-	// order for processing: by perfect then by free then by valid
-	std::sort(group.begin(), group.end(), text_in_group_t::process_order_t());
-}
-*/

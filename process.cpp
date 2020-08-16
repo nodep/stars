@@ -1217,46 +1217,6 @@ void process::init_text_positions()
 
 typedef std::pair<std::vector<text_object>::iterator, std::vector<text_object>::iterator> connection_t;
 
-struct overlap_t
-{
-	size_t	txt1;
-	size_t	pos1;
-
-	size_t	txt2;
-	size_t	pos2;
-
-	overlap_t(const text_object& t1, const text_object::position_t& p1, const text_object& t2, const text_object::position_t& p2)
-		:	txt1(&t1 - &store->texts.front()),
-			pos1(&p1 - &t1.valid_positions.front()),
-			txt2(&t2 - &store->texts.front()),
-			pos2(&p2 - &t2.valid_positions.front())
-	{
-		assert(pos1 < 8  &&  pos2 < 8  && txt1 < 10000 && txt2 < 10000);
-	}
-
-	overlap_t(const size_t t1, const size_t p1, const size_t t2, const size_t p2)
-	:	txt1(t1),
-		pos1(p1),
-		txt2(t2),
-		pos2(p2)
-	{
-		assert(pos1 < 8 && pos2 < 8 && txt1 < 10000 && txt2 < 10000);
-	}
-
-	bool operator == (const overlap_t& rhs) const
-	{
-		return		txt1 == rhs.txt1
-				&&	pos1 == rhs.pos1
-				&&	txt2 == rhs.txt2
-				&&	pos2 == rhs.pos2;
-	}
-	/*
-	overlap_t()
-		: txt1(0), pos1(0), txt2(0), pos2(0)
-	{}
-	*/
-};
-
 namespace std
 {
 	template<> struct hash<overlap_t>
@@ -1268,6 +1228,12 @@ namespace std
 	};
 }
 
+#ifdef NDEBUG
+#define PRUNING_LIMIT		100000
+#else
+#define PRUNING_LIMIT		10000
+#endif
+
 void process::find_text_positions()
 {
 	stopwatch_t swatch;
@@ -1275,15 +1241,16 @@ void process::find_text_positions()
 
 	log_stream << "finding text overlap positions...\n";
 
-	std::unordered_set<overlap_t> overlaps_hash;
+	std::unordered_set<overlap_t> overlaps_set;
 	std::vector<group_t> groups;
 
 	// iterate through every pair of texts on the map, and build hash tables of overlapping texts,
 	// and groups of mutually overlapping texts
-	for (auto out_iter = store->texts.begin(); out_iter < store->texts.end(); out_iter++)
+	for (auto out_iter = store->texts.begin(); out_iter != store->texts.end(); out_iter++)
 	{
-		for (auto in_iter = out_iter + 1; in_iter < store->texts.end(); in_iter++)
+		for (auto in_iter = out_iter + 1; in_iter != store->texts.end(); in_iter++)
 		{
+			//log_stream << "? " << out_iter->text << " " << in_iter->text << "\n";
 			// iterate through all the positions for these two texts
 			bool found = false;
 			for (auto& out_vp: out_iter->valid_positions)
@@ -1292,58 +1259,143 @@ void process::find_text_positions()
 				{
 					if (overlap_text_text(out_vp, in_vp))
 					{
+						//log_stream << "! ovp " << overlap_t(*out_iter, out_vp, *in_iter, in_vp) << "\n";
+
 						// we don't know in which order the overlap_t is going to be initialized:
 						// txt1, txt2   or   txt2, txt1
 						// so add for both combinations
-						overlaps_hash.insert(overlap_t(*out_iter, out_vp, *in_iter, in_vp));
-						overlaps_hash.insert(overlap_t(*in_iter, in_vp, *out_iter, out_vp));
+						overlaps_set.insert(overlap_t(*out_iter, out_vp, *in_iter, in_vp));
+						overlaps_set.insert(overlap_t(*in_iter, in_vp, *out_iter, out_vp));
 
 						out_iter->has_overlaps = in_iter->has_overlaps = true;
 
-						// add to groups of mutally overlapping texts
-						bool out_found = false, in_found = false;
-						for (auto& grp : groups)
+						found = true;
+					}
+				}
+			}
+
+			if (found)
+			{
+				//log_stream << "* current groups:\n";
+				//for (const auto& grp : groups)			log_stream << grp;
+
+				int64_t out_group = -1;
+				int64_t in_group = -1;
+				for (auto& grp : groups)
+				{
+					//log_stream << "^ checking group:\n" << grp;
+					for (const auto& gtxt : grp)
+					{
+						//log_stream << ": " << *gtxt << "\n";
+						
+						if (gtxt == out_iter)
 						{
-							for (const auto& gtxt : grp)
-							{
-								out_found |= (gtxt == out_iter);
-								in_found |= (gtxt == in_iter);
-							}
-
-							if (out_found  &&  !in_found)
-								grp.push_back(in_iter);
-							else if (in_found  &&  !out_found)
-								grp.push_back(out_iter);
-
-							if (out_found || in_found)
-								break;
+							assert(out_group == -1);
+							//log_stream << "$ found out " << *gtxt << "\n";
+							out_group = &grp - &groups.front();
 						}
 
-						if (!out_found && !in_found)
+						if (gtxt == in_iter)
 						{
-							groups.push_back({ in_iter, out_iter });
+							assert(in_group == -1);
+							//log_stream << "$ found in  " << *gtxt << "\n";
+							in_group = &grp - &groups.front();
 						}
 					}
+				}
+
+				if (out_group == -1  &&  in_group == -1)
+				{
+					groups.push_back({ out_iter, in_iter });
+					//log_stream << ". created group ID " << groups.size() << "\n" << groups.back();
+				}
+				else if (out_group != -1 && in_group != -1  &&  in_group != out_group)
+				{
+					assert(out_group != in_group);
+
+					//log_stream << ". joining group ID " << out_group << "\n" << groups[out_group];
+					//log_stream << ". and group ID " << in_group << "\n" << groups[in_group];
+
+					// join groups
+					for (const auto& txt_iter : groups[in_group])
+						groups[out_group].push_back(txt_iter);
+
+					groups[in_group].clear();
+
+					//log_stream << ". giving\n" << groups[out_group];
+				}
+				else if (out_group == -1)
+				{
+					groups[in_group].push_back(out_iter);
+					//log_stream << ". added " << *out_iter << " to group ID " << in_group << "\n" << groups[in_group];
+				}
+				else if (in_group == -1)
+				{
+					groups[out_group].push_back(in_iter);
+					//log_stream << ". added " << *in_iter << " to group ID " << out_group << "\n" << groups[out_group];
 				}
 			}
 		}
 	}
 
-	log_stream << "found " << overlaps_hash.size() / 2 << " overlaps\n";
+	log_stream << "found " << overlaps_set.size() / 2 << " overlaps\n";
+
+	// set the best positions for text that don't overlap any other
+	for (auto& txt : store->texts)
+	{
+		if (!txt.has_overlaps)
+		{
+			size_t best_pos = 0;
+			for (const auto& vp : txt.valid_positions)
+			{
+				if (txt.valid_positions[best_pos].grade > vp.grade)
+					best_pos = &vp - &txt.valid_positions.front();
+			}
+			if (best_pos > 0)
+				txt.valid_positions[0] = txt.valid_positions[best_pos];
+		}
+	}
 
 	for (const auto& grp : groups)
 		log_stream << grp;
 
+	// remove positions which are perfect and don't overlap others in it
+	/*
 	for (auto& grp : groups)
 	{
-		std::vector<std::vector<uint8_t>> combinations;
-		std::vector<int> grades;
+		group_t new_grp;
+		for (auto& txt_iter : grp)
+		{
+			overlap_t o(&*txt_iter - &store->texts.front(), 0,
+						0, 0);
+			if (txt_iter->valid_positions.front().grade == 0)
+			{
+				o.
+			}
+		}
+	}
+	*/
 
-		log_stream << "texts " << grp.size() << '\n';
+	log_stream << "********************************************\n";
+	log_stream << "********************************************\n";
+	log_stream << "********************************************\n";
+
+	for (auto& grp : groups)
+	{
+		if (grp.empty())
+			continue;
+
+		std::vector<std::vector<uint8_t>> combinations;
+		std::vector<size_t> grades;
+
+		log_stream << "-----------------------------\n" << grp;
+
 		size_t n = 0;
 		for (auto& txt_iter : grp)
 		{
-			log_stream << "text " << n++ << '\n';
+			const size_t chk_ndx = &*txt_iter - &store->texts.front();
+
+			log_stream << "text " << n++ << " valids " << txt_iter->valid_positions.size() << '\n';
 			if (combinations.empty())
 			{
 				for (uint8_t pos = 0; pos < txt_iter->valid_positions.size(); pos++)
@@ -1355,42 +1407,128 @@ void process::find_text_positions()
 			else
 			{
 				std::vector<std::vector<uint8_t>> new_combs;
-				std::vector<int> new_grades;
+				std::vector<size_t> new_grades;
 
 				for (auto& cmb : combinations)
 				{
-					for (auto& in_pos : cmb)
+					for (uint8_t out_pos = 0; out_pos < txt_iter->valid_positions.size(); out_pos++)
 					{
-						for (uint8_t out_pos = 0; out_pos < txt_iter->valid_positions.size(); out_pos++)
+						bool found_overlap = false;
+						for (auto& in_pos : cmb)
 						{
-							overlap_t o(&*txt_iter - &store->texts.front(), out_pos,
-								&in_pos - &cmb.front(), in_pos);
+							const size_t cmb_ndx = &*grp[&in_pos - &cmb.front()] - &store->texts.front();
 
-							if (overlaps_hash.find(o) == overlaps_hash.end())
+							overlap_t o(chk_ndx, out_pos,
+										cmb_ndx, in_pos);
+
+							if (overlaps_set.find(o) != overlaps_set.end())
 							{
-								std::vector<uint8_t> new_cmb(cmb);
-								new_cmb.push_back(out_pos);
-
-								new_combs.push_back(new_cmb);
-								new_grades.push_back(grades[&cmb - &combinations.front()] + txt_iter->valid_positions[out_pos].grade);
+								found_overlap = true;
+								break;
 							}
+						}
+
+						if (!found_overlap)
+						{
+							std::vector<uint8_t> new_cmb(cmb);
+							new_cmb.push_back(out_pos);
+
+							new_combs.push_back(new_cmb);
+							new_grades.push_back(grades[&cmb - &combinations.front()] + txt_iter->valid_positions[out_pos].grade);
 						}
 					}
 				}
 
-				combinations.swap(new_combs);
-				grades.swap(new_grades);
+				log_stream << "combinations " << new_combs.size() << "\n";
 
-				int max = grades[0], min = grades[0];
-				for (int g : grades)
+				// prune?
+				if (new_combs.size() > PRUNING_LIMIT)
 				{
-					if (max < g)	max = g;
-					if (min > g)	min = g;
-				}
+					// calc grades range
+					size_t max = new_grades[0], min = new_grades[0];
+					for (size_t g : new_grades)
+					{
+						if (max < g)	max = g;
+						if (min > g)	min = g;
+					}
 
-				log_stream << "min " << min << " max " << max << "\n";
-				log_stream << "combinations " << combinations.size() << "\n";
+					log_stream << "  - min " << min << " max " << max << "\n";
+
+					// calc grades distribution
+					std::vector<size_t> grd_by_val(max + 1, 0);
+					for (size_t g : new_grades)
+						grd_by_val[g]++;
+
+					//log_stream << "------------------\n";
+					size_t cnt = 0;
+					for (size_t& c : grd_by_val)
+						if (c)
+						{
+							//log_stream << "grd == " << &c - &grd_by_val.front() << " count == " << c << '\n';
+							cnt += c;
+						}
+
+					assert(cnt == new_combs.size());
+					assert(cnt == new_grades.size());
+
+					// find grade which splits the combinations so that one 8th of the combinations are better
+					size_t partition_grade = 0;
+					size_t count_summ = 0;
+					for (size_t& c : grd_by_val)
+					{
+						//log_stream << "  - count_summ " << count_summ << "\n";
+						if (count_summ <= PRUNING_LIMIT && count_summ + c > PRUNING_LIMIT)
+						{
+							partition_grade = &c - &grd_by_val.front();
+							break;
+						}
+						count_summ += c;
+					}
+
+					assert(partition_grade >= min);
+
+					log_stream << "  - prunining grade " << partition_grade << "\n";
+
+					// now copy the new combinations and grades but only the ones better than partition_grade
+					combinations.clear();
+					grades.clear();
+					for (size_t& grade : new_grades)
+					{
+						if (grade < partition_grade)
+						{
+							combinations.push_back(new_combs[&grade - &new_grades.front()]);
+							grades.push_back(grade);
+						}
+					}
+
+					assert(combinations.size());
+
+					log_stream << "  - pruned down to " << combinations.size() << "\n";
+				}
+				else
+				{
+					combinations.swap(new_combs);
+					grades.swap(new_grades);
+				}
 			}
+		}
+
+		// output the best combination
+		size_t min = grades[0];
+		for (size_t g : grades)
+			if (min > g)	min = g;
+
+		log_stream << "best grade " << min << "\n";
+		auto iter = std::find(grades.begin(), grades.end(), min);
+		assert(iter != grades.end());
+
+		decltype (combinations.front()) best_comb(combinations[iter - grades.begin()]);
+
+		for (auto& txt_iter : grp)
+		{
+			const size_t txt_ndx = &txt_iter - &grp.front();
+			if (best_comb[txt_ndx])
+				txt_iter->valid_positions.front() = txt_iter->valid_positions[best_comb[txt_ndx]];
 		}
 	}
 

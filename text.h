@@ -9,8 +9,6 @@ class text_object
 public:
 	enum class position_code_e { right, left, up, down, right_up, right_down, left_up, left_down, other, invalid };
 
-	typedef int		position_quality_t;
-
 	enum { not_overlapping, overlapping, not_set };
 	typedef enum { alinman_overlap, meridian_overlap, declination_overlap, out_of_bounds, overlap_count } overlap_type;
 
@@ -22,7 +20,7 @@ public:
 		point				right_up_bound;
 		bool				overlaps[overlap_count];
 		double				angle;				// the text angle in this position
-		position_quality_t	grade;				// the grade of the position (overlaps with map elements)
+		size_t				grade;				// the grade of the position (overlaps with map elements)
 		bool				is_perfect;			// no overlaps with any element of the map
 
 		void set_direct(point& p, text_object& txt)
@@ -175,23 +173,38 @@ typedef std::vector<std::vector<text_object>::iterator>	group_t;
 
 log_t& operator << (log_t& o, const text_object& t);
 
+struct overlap_t;
+
 log_t& operator << (log_t& o, const group_t& t);
+log_t& operator << (log_t& o, const overlap_t& ovp);
 
 void optimize_text_group(group_t& grp);
 
-/*
-struct group_t
+struct overlap_t
 {
-	typedef std::vector<std::vector<text_object>::iterator>		texts_container_t;
-	texts_container_t		texts;
+	size_t	txt1;
+	size_t	pos1;
 
-	bool operator < (const group_t& rhs) const	{ return texts.size() < rhs.texts.size(); }
-	bool operator > (const group_t& rhs) const	{ return texts.size() > rhs.texts.size(); }
+	size_t	txt2;
+	size_t	pos2;
+
+	overlap_t(const text_object& t1, const text_object::position_t& p1, const text_object& t2, const text_object::position_t& p2);
+
+	overlap_t(const size_t t1, const size_t p1, const size_t t2, const size_t p2)
+		: txt1(t1),
+		pos1(p1),
+		txt2(t2),
+		pos2(p2)
+	{
+		assert(pos1 < 8 && pos2 < 8 && txt1 < 10000 && txt2 < 10000);
+	}
+
+	bool operator == (const overlap_t& rhs) const
+	{
+		return		txt1 == rhs.txt1
+			&& pos1 == rhs.pos1
+			&& txt2 == rhs.txt2
+			&& pos2 == rhs.pos2;
+	}
 };
 
-struct text_group_processor_t
-{
-	// process a group -- find it's best position
-	void operator () (group_t& grp);
-};
-*/
