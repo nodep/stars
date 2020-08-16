@@ -7,7 +7,6 @@
 #include "storage.h"
 #include "ps_canvas.h"
 #include "asterism_line.h"
-#include "matrix.h"
 
 const double sq_root = sqrt(2.0);
 const size_t max_matrix_mem_usage = 1024 * 1024 * 2;
@@ -23,12 +22,7 @@ inline double calc_theta(const point& A, const point& B)
 		return beta;
 }
 
-std::vector<text_object>::iterator text_object::position_selector::overlaps_another() const
-{
-	return store->get_overlapping_text(*parent);
-}
-
-bool text_object::overlaps_alinman(const position_t& on_pos) const
+bool text_object::overlaps_asterism(const position_t& on_pos) const
 {
 	// the asterism lines
 	point startPt, endPt, cornerPt;
@@ -375,6 +369,17 @@ overlap_t::overlap_t(const text_object& t1, const text_object::position_t& p1, c
 	assert(pos1 < 8 && pos2 < 8 && txt1 < 10000 && txt2 < 10000);
 }
 
+overlap_t::overlap_t(const size_t t1, const size_t p1, const size_t t2, const size_t p2)
+:	txt1(t1),
+	pos1(p1),
+	txt2(t2),
+	pos2(p2)
+{
+	assert(pos1 < store->texts[txt1].valid_positions.size()
+		&& pos2 < store->texts[txt2].valid_positions.size()
+		&& txt1 < store->texts.size()
+		&& txt2 < store->texts.size());
+}
 
 bool text_object::find_valid_positions()
 {
@@ -393,12 +398,10 @@ bool text_object::find_valid_positions()
 
 		// are we overlapping any object?
 		if (store->text_overlaps_object(*this, vp))
-		{
 			continue;	// position invalid - drop it
-		}
 
 		// no object overlaps -- set the overlap flags
-		vp.overlaps[alinman_overlap] = overlaps_alinman(vp);
+		vp.overlaps[asterism_overlap] = overlaps_asterism(vp);
 		vp.overlaps[meridian_overlap] = overlaps_meridian(vp);
 		vp.overlaps[declination_overlap] = overlaps_declination(vp);
 		vp.overlaps[out_of_bounds] = vp.right_up_bound.r > cfg->get_map_radius();
@@ -414,8 +417,8 @@ bool text_object::find_valid_positions()
 		if (vp.overlaps[declination_overlap])
 			grade += 18;
 
-		// alinmans
-		if (vp.overlaps[alinman_overlap])
+		// asterisms
+		if (vp.overlaps[asterism_overlap])
 			grade += 14;
 
 		// the meridians
@@ -425,7 +428,6 @@ bool text_object::find_valid_positions()
 		grade += (size_t)curr_pos_code;
 
 		vp.grade = grade;
-		vp.is_perfect = (grade == 0);
 
 		valid_positions.push_back(vp);
 	}
@@ -500,269 +502,4 @@ log_t& operator << (log_t& o, const overlap_t& ovp)
 	o << row;
 
 	return o;
-}
-
-// ****************************
-// finding positions
-// ****************************
-
-typedef matrix<text_object::position_selector>		matrix_t;
-
-inline std::string int2str(const int i)
-{
-	char buffer[20];
-	sprintf_s(buffer, sizeof(buffer), "%i", i);
-	return buffer;
-}
-
-std::string bytes_to_readable(const long long bytes)
-{
-	std::string ret_val;
-
-	if (bytes > 1024 * 1024 * 1024)
-		ret_val += int2str((int) bytes / 1024 / 1024 / 1024) + " GB";
-	else if (bytes > 1024 * 1024)
-		ret_val += int2str((int) bytes / 1024 / 1024) + " MB";
-	else if (bytes > 1024)
-		ret_val += int2str((int) bytes / 1024) + " KB";
-	else
-		ret_val += int2str((int) bytes) + " Bytes";
-
-	return ret_val;
-}
-
-// special version for matrices of texts
-log_t& operator << (log_t& o, matrix_t& m)
-{
-	o << "matrix rows=" << m.size_rows() << " cols=" << m.size_columns()
-		<< "  size=" << m.size() << "(elem)  " << bytes_to_readable(sizeof(text_object::position_selector) * m.size()) << "\n";
-
-	/*
-	for (size_t row_cnt = 0; row_cnt < m.size_rows(); ++row_cnt)
-	{
-		for (size_t col_cnt = 0; col_cnt < m.size_columns(); ++col_cnt)
-		{
-			text_object& txt = *m.get(row_cnt, col_cnt);
-			o << (txt.is_greek ? "G[" : " [");
-			o << txt.text.substr(0, 5) << "] p:";
-
-			switch (txt.curr_pos().position_code)
-			{
-			case text_object::right:		o << "R ";	break;
-			case text_object::left:			o << "L ";	break;
-			case text_object::up:			o << "U ";	break;
-			case text_object::down:			o << "D ";	break;
-			case text_object::right_up:		o << "RU";	break;
-			case text_object::right_down:	o << "RD";	break;
-			case text_object::left_up:		o << "LU";	break;
-			case text_object::left_down:	o << "LD";	break;
-			}
-
-			o << (col_cnt == m.size_columns() - 1 ? "\n" : "\t");
-		}
-	}
-	*/
-
-	return o;
-};
-
-struct text_in_group_t		// the name should be changed
-{
-	// the overlaps of this text with all the other texts
-	struct overlaps_another_t
-	{
-		size_t								in_position;		// this text overlaps with ...
-		text_object::position_selector		with_position;		// ... a text in this position
-
-		explicit overlaps_another_t(const size_t ip, text_object::position_selector& wp)
-			: in_position(ip), with_position(wp)
-		{}
-	};
-
-	std::vector<text_object>::iterator	txt_iter;		// the iterator to the text
-	std::vector<overlaps_another_t>		all_overlaps;
-
-	explicit text_in_group_t(const std::vector<text_object>::iterator& ti)
-		: txt_iter(ti)
-	{}
-
-	/*
-	void add_overlap(text_object::position_selector& overlap_pos_iter)
-	{
-		all_overlaps.push_back(overlaps_another_t(txt_iter->get_current_position_index(), overlap_pos_iter));
-	}
-	*/
-
-	// ***************************
-	// statistic data for the text
-
-	size_t		total_pos_cnt;			// valid positions
-	size_t		overlap_pos_cnt;		// positions with overlaps with other texts
-	size_t		free_pos_cnt;			// all the free positions
-	size_t		perfect_pos_cnt;		// perfect free positions (no overlaps of any kind)
-
-	std::vector<size_t>		free_pos;		// the free positions of this text
-	std::vector<size_t>		perfect_pos;	// the perfect positions of this text
-
-	// *******************************
-	// calculates the above statistics
-	void calc_stats()
-	{
-		// set the total number of positions
-		total_pos_cnt = txt_iter->valid_positions.size();
-
-		// get indecies of overlap positions
-		std::set<size_t> overlap_pos;
-		std::vector<overlaps_another_t>::iterator ao_iter = all_overlaps.begin();
-		while (ao_iter != all_overlaps.end())
-		{
-			// insert the overlapping pos index into the set
-			overlap_pos.insert(ao_iter->in_position);
-			++ao_iter;
-		}
-
-		overlap_pos_cnt = overlap_pos.size();
-		free_pos_cnt = total_pos_cnt - overlap_pos_cnt;
-
-		// make a vector of all the valid position indexes
-		std::vector<size_t> all_pos(total_pos_cnt);
-		for (size_t c = 0; c < all_pos.size(); ++c)
-			all_pos[c] = c;
-
-		// now get all the free positions
-		free_pos.clear();
-		free_pos.insert(free_pos.begin(), free_pos_cnt, 0); 
-		std::set_difference(all_pos.begin(), all_pos.end(),
-							overlap_pos.begin(), overlap_pos.end(),
-							free_pos.begin());
-
-		// now count and collect all the perfect free positions
-		perfect_pos_cnt = 0;
-		std::vector<size_t>::iterator free_pos_iter = free_pos.begin();
-		while (free_pos_iter != free_pos.end())
-		{
-			if (txt_iter->valid_positions[*free_pos_iter].is_perfect)
-			{
-				perfect_pos.push_back(*free_pos_iter);
-				++perfect_pos_cnt;
-			}
-
-			++free_pos_iter;
-		}
-	}
-
-	// *****************
-	// sort the group by
-	struct process_order_t
-	{
-		typedef const text_in_group_t		first_argument_type;
-		typedef const text_in_group_t		second_argument_type;
-		typedef bool						result_type;
-
-		result_type operator () (first_argument_type& lhs, second_argument_type& rhs) const
-		{
-			if (lhs.perfect_pos_cnt < rhs.perfect_pos_cnt)
-				return true;
-			if (lhs.perfect_pos_cnt > rhs.perfect_pos_cnt)
-				return false;
-
-			if (lhs.free_pos_cnt < rhs.free_pos_cnt)
-				return true;
-			if (lhs.free_pos_cnt > rhs.free_pos_cnt)
-				return false;
-
-			return lhs.overlap_pos_cnt < rhs.overlap_pos_cnt;
-		}
-	};
-
-	bool has_perfect() const
-	{
-		return perfect_pos_cnt > 0;
-	}
-
-	bool has_free() const
-	{
-		return free_pos_cnt > 0;
-	}
-};
-
-void fill_stats(std::vector<text_in_group_t>& group)
-{
-	// iterate all the pairs of texts in the group
-	std::vector<text_in_group_t>::iterator out_text_iter = group.begin();
-	std::vector<text_in_group_t>::iterator in_text_iter;
-	while (out_text_iter != group.end())
-	{
-		in_text_iter = out_text_iter + 1;
-
-		while (in_text_iter != group.end())
-		{
-			// iterate all the posible positions of these two texts
-			for (auto& out_vp: out_text_iter->txt_iter->valid_positions)
-			{
-				for (auto& in_vp : in_text_iter->txt_iter->valid_positions)
-				{
-					// do they overlap?
-					if (overlap_text_text(out_vp, in_vp))
-					{
-						// add the info about overlaps to the all_overlaps
-						// container of the two texts
-
-						assert(false);
-						//!!! out_text_iter->add_overlap(in_pos);
-						//!!! in_text_iter->add_overlap(out_pos);
-					}
-				}
-			}
-
-			++in_text_iter;
-		}
-
-		++out_text_iter;
-	}
-
-	// update the stats
-	out_text_iter = group.begin();
-	while (out_text_iter != group.end())
-	{
-		out_text_iter->calc_stats();
-		++out_text_iter;
-	}
-}
-
-std::string get_temp_filename()
-{
-	char result[L_tmpnam];
-	tmpnam_s(result, sizeof(result));
-	return result;
-}
-
-template <typename T>
-void save(const matrix<T>& m, const std::string& fname)
-{
-	log_stream << "writing to " << fname << " rows: " << m._rows << " cols: " << m._columns << " bytes: " << sizeof(T) * m._data.size() + sizeof(m._rows) * 2 << "\n";
-
-	std::ofstream out(fname, std::ios_base::binary);
-	out.write((char*) &m._rows, sizeof(m._rows));
-	out.write((char*) &m._columns, sizeof(m._columns));
-
-	out.write((char*) &m._data.front(), sizeof(T) * m._data.size());
-}
-
-template <typename T>
-void load(matrix<T>& m, const std::string& fname)
-{
-	m.clear();
-
-	std::ifstream out(fname, std::ios_base::binary);
-	out.read((char*) &m._rows, sizeof(m._rows));
-	out.read((char*) &m._columns, sizeof(m._columns));
-
-	const size_t size = m._rows * m._columns;
-
-	log_stream << "reading from " << fname << " rows: " << m._rows << " cols: " << m._columns << " bytes: " << sizeof(T) * size + sizeof(m._rows) * 2 << " size==" << size << "\n";
-
-	m._data.clear();
-	m._data.insert(m._data.end(), m._rows * m._columns, T());
-	out.read((char*)&*m._data.begin(), sizeof(T) * m._data.size());
 }

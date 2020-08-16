@@ -476,7 +476,7 @@ void process::stars()
 		++out_pos_iter;
 	}
 
-	// draw the alinmans so the lines don't overlap the star
+	// draw the asterisms so the lines don't overlap the star
 	if (cfg->draw_asterism())
 		asterisms();
 
@@ -578,9 +578,8 @@ void process::star_designations()
 
 	// this string is an index of greek letters into their ASCII values
 	// in the Symbol font
-	std::string greek_map = " ALP a BET b GAM g DEL d EPS e ZET z ETA h THE J IOT i";
-	greek_map += " KAP k LAM l MU  m NU  n XI  x OMI o PI  p RHO r SIG s TAU t";
-	greek_map += " UPS u PHI j CHI c PSI y OME w";
+	const std::string greek_map =	" ALP a BET b GAM g DEL d EPS e ZET z ETA h THE J IOT i KAP k LAM l MU  m"
+									" NU  n XI  x OMI o PI  p RHO r SIG s TAU t UPS u PHI j CHI c PSI y OME w";
 
 	text_object text;
 	std::string bayer, bayerNum;
@@ -942,13 +941,6 @@ void process::asterisms()
 		else
 			++c;
 	}
-
-	/*
-	std::vector<asterism_line>::iterator new_end = std::remove_if(store->asterism_lines.begin(), store->asterism_lines.end(), 
-				std::compose1(std::logical_not<bool>(), asterism_line::is_valid()));
-
-	store->asterism_lines.erase(new_end, store->asterism_lines.end());
-	*/
 
 	// set the pen
 	if (cfg->get_asterism_style() == config::ls_solid)
@@ -1359,7 +1351,7 @@ void process::find_text_positions()
 	for (const auto& grp : groups)
 		log_stream << grp;
 
-	// remove positions which are perfect and don't overlap others in it
+	// remove positions which are perfect and don't overlap others in it (TODO)
 	/*
 	for (auto& grp : groups)
 	{
@@ -1459,19 +1451,10 @@ void process::find_text_positions()
 					for (size_t g : new_grades)
 						grd_by_val[g]++;
 
-					//log_stream << "------------------\n";
-					size_t cnt = 0;
-					for (size_t& c : grd_by_val)
-						if (c)
-						{
-							//log_stream << "grd == " << &c - &grd_by_val.front() << " count == " << c << '\n';
-							cnt += c;
-						}
+					assert(new_grades.size() == new_combs.size());
 
-					assert(cnt == new_combs.size());
-					assert(cnt == new_grades.size());
-
-					// find grade which splits the combinations so that one 8th of the combinations are better
+					// find grade which splits the combinations so that after
+					// pruning we are left with PRUNING_LIMIT combinations
 					size_t partition_grade = 0;
 					size_t count_summ = 0;
 					for (size_t& c : grd_by_val)
@@ -1531,133 +1514,6 @@ void process::find_text_positions()
 				txt_iter->valid_positions.front() = txt_iter->valid_positions[best_comb[txt_ndx]];
 		}
 	}
-
-
-	/*
-	// build groups of directly/indirectly connected texts
-	std::vector<group_t> groups;
-	std::vector<connection_t>::iterator conn_iter = connections.begin();
-	while (conn_iter != connections.end())
-	{
-		// log_stream << "connection: " << conn_iter->first->text << " -- " << conn_iter->second->text << "\n";
-
-		group_t* first_found_in = 0;
-		group_t* second_found_in = 0;
-
-		// try to find either text in any of the existing groups
-		std::vector<group_t>::iterator srch_grp = groups.begin();
-		while (srch_grp != groups.end())
-		{
-			group_t::texts_container_t::iterator srch_first  = std::find(srch_grp->texts.begin(), srch_grp->texts.end(), conn_iter->first);
-			group_t::texts_container_t::iterator srch_second = std::find(srch_grp->texts.begin(), srch_grp->texts.end(), conn_iter->second);
-
-			if (srch_first != srch_grp->texts.end())
-			{
-				assert(first_found_in == 0);
-				first_found_in = &*srch_grp;
-			}
-
-			if (srch_second != srch_grp->texts.end())
-			{
-				assert(second_found_in == 0);
-				second_found_in = &*srch_grp;
-			}
-
-			++srch_grp;
-		}
-
-		if (first_found_in == 0  &&  second_found_in != 0)
-		{
-			// add the first text to the group the second text was found in
-			second_found_in->texts.push_back(conn_iter->first);
-		} else if (first_found_in != 0  &&  second_found_in == 0) {
-			// add the second text to the group the first text was found in
-			first_found_in->texts.push_back(conn_iter->second);
-		} else if (first_found_in == 0  &&  second_found_in == 0) {
-			// none of the texts found -- make a new group for them
-			group_t gr;
-			gr.texts.push_back(conn_iter->first);
-			gr.texts.push_back(conn_iter->second);
-
-			groups.push_back(gr);
-		} else if (first_found_in != second_found_in) {
-			// if both texts are found but in different groups -- join the groups
-			
-			// copy the second group's member to the first
-			first_found_in->texts.insert(first_found_in->texts.end(),
-											second_found_in->texts.begin(), second_found_in->texts.end());
-
-			// delete the second group
-			groups.erase(groups.begin() + (second_found_in - &groups.front()));
-		}
-
-		++conn_iter;
-	}
-
-	std::sort(groups.begin(), groups.end(), std::greater<group_t>());
-
-	// !!! dbg
-	log_stream << "groups found: " << groups.size() << "\n";
-	log_stream << "largest group: " << groups.front().texts.size() << "\n";
-	log_stream << "time taken: " << swatch.get_msec() / 1000.0 << "sec\n";
-	swatch.start();
-	// !!! dbg
-
-	log_stream << "finding valid text positions for groups...\n";
-	text_group_processor_t()(groups[28]);
-	text_group_processor_t()(groups.front());
-	group_t::texts_container_t::iterator ti = groups.front().texts.begin();
-	while (ti != groups.front().texts.end())
-	{
-    	canvas->draw(**ti);
-		++ti;
-	}
-	return;
-
-	std::for_each(groups.begin(), groups.end(), optimize_text_group);
-	//std::for_each(groups.begin(), groups.end(), text_group_processor_t());
-
-	log_stream << "time taken: " << swatch.get_msec() / 1000.0 << "sec\n";
-
-	// position the texts that are not in any group (has_overlaps == false)
-	log_stream << "finding positions for free texts...\n";
-	std::vector<text_object>::iterator txt_iter = store->texts.begin();
-	while (txt_iter != store->texts.end())
-	{
-		// we need some ugly special case handling for polaris
-		if (txt_iter->text == "Polaris")
-		{
-			//txt_iter->set_position_index(2);	// right
-		} else if (txt_iter->text == "a"  &&  txt_iter->bound_to.r < 2) {
-			//txt_iter->set_position_index(1);	// left
-			// log_stream << "spec pos for: " << txt_iter->bound_to.r << "\n";
-		} else if (!txt_iter->has_overlaps) {
-			text_object::position_selector pos_iter(txt_iter);
-
-			// init the first position
-			int best_grade = (*pos_iter).get_pos_grade();
-			text_object::position_selector best_pos_iter = pos_iter;
-
-			++pos_iter;
-
-			while (pos_iter != txt_iter->end())
-			{
-				if (pos_iter->get_pos_grade() > best_grade)
-				{
-					best_pos_iter = pos_iter;
-					best_grade = best_pos_iter->get_pos_grade();
-				}
-
-				++pos_iter;
-			}
-
-			// set the best pos
-			*best_pos_iter;
-		}
-
-		++txt_iter;
-	}
-	*/
 }
 
 void process::radiants()

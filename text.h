@@ -2,15 +2,13 @@
 
 #include "point.h"
 
-const size_t max_positions = 8;
-
 class text_object
 {
 public:
 	enum class position_code_e { right, left, up, down, right_up, right_down, left_up, left_down, other, invalid };
 
 	enum { not_overlapping, overlapping, not_set };
-	typedef enum { alinman_overlap, meridian_overlap, declination_overlap, out_of_bounds, overlap_count } overlap_type;
+	typedef enum { asterism_overlap, meridian_overlap, declination_overlap, out_of_bounds, overlap_count } overlap_type;
 
 	struct position_t
 	{
@@ -21,7 +19,6 @@ public:
 		bool				overlaps[overlap_count];
 		double				angle;				// the text angle in this position
 		size_t				grade;				// the grade of the position (overlaps with map elements)
-		bool				is_perfect;			// no overlaps with any element of the map
 
 		void set_direct(point& p, text_object& txt)
 		{
@@ -38,10 +35,7 @@ public:
 
 private:
 
-	//void update_angle(valid_position_t& pos);
-	//void update_bounds(valid_position_t& pos);
-
-	bool overlaps_alinman(const position_t& on_pos) const;
+	bool overlaps_asterism(const position_t& on_pos) const;
 	bool overlaps_meridian(const position_t& on_pos) const;
 	bool overlaps_declination(const position_t& on_pos) const;
 
@@ -90,8 +84,6 @@ public:
 			++curr_pos;
 			return *this;
 		}
-
-		std::vector<text_object>::iterator overlaps_another() const;
 	};
 
 	std::string				text;					// the text
@@ -171,14 +163,11 @@ public:
 
 typedef std::vector<std::vector<text_object>::iterator>	group_t;
 
-log_t& operator << (log_t& o, const text_object& t);
-
 struct overlap_t;
 
+log_t& operator << (log_t& o, const text_object& t);
 log_t& operator << (log_t& o, const group_t& t);
 log_t& operator << (log_t& o, const overlap_t& ovp);
-
-void optimize_text_group(group_t& grp);
 
 struct overlap_t
 {
@@ -189,15 +178,7 @@ struct overlap_t
 	size_t	pos2;
 
 	overlap_t(const text_object& t1, const text_object::position_t& p1, const text_object& t2, const text_object::position_t& p2);
-
-	overlap_t(const size_t t1, const size_t p1, const size_t t2, const size_t p2)
-		: txt1(t1),
-		pos1(p1),
-		txt2(t2),
-		pos2(p2)
-	{
-		assert(pos1 < 8 && pos2 < 8 && txt1 < 10000 && txt2 < 10000);
-	}
+	overlap_t(const size_t t1, const size_t p1, const size_t t2, const size_t p2);
 
 	bool operator == (const overlap_t& rhs) const
 	{
