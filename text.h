@@ -35,6 +35,7 @@ public:
 
 private:
 
+	bool overlaps_line(const position_t& on_pos) const;
 	bool overlaps_asterism(const position_t& on_pos) const;
 	bool overlaps_meridian(const position_t& on_pos) const;
 	bool overlaps_declination(const position_t& on_pos) const;

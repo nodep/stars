@@ -174,8 +174,24 @@ void precession(const double inEpoch, const coordinate& inCoord, const double ou
 	outCoord.alpha = outRA / pi * 12;
 }
 
-bool is_in_custom::operator () (argument_type& c) const
+bool is_in_map_boundaries(const coordinate& c)
 {
-	return c.alpha > cfg->get_ra_range().first   &&   c.alpha < cfg->get_ra_range().second
-			&&  c.delta > cfg->get_dec_range().first   &&   c.delta < cfg->get_dec_range().second;
+	decltype (cfg->get_ra_range()) ra_range { cfg->get_ra_range() };
+	decltype (cfg->get_dec_range()) dec_range{ cfg->get_dec_range() };
+
+	if (ra_range == std::make_pair(0.0, 0.0) || dec_range == std::make_pair(0.0, 0.0))
+		return calc_pole_distance(c) < cfg->get_max_pole_distance();
+
+	return c.alpha > ra_range.first && c.alpha < ra_range.second
+		&& c.delta > dec_range.first && c.delta < dec_range.second;
+}
+
+point dekart::conv2polar() const
+{
+	if (x == 0)
+		return point(abs(y), y < 180 && y > 0 ? 90 : 270);
+	else if (x < 0)
+		return point(sqrt(x * x + y * y), atan(y / x) + pi);
+
+	return point(sqrt(x * x + y * y), atan(y / x));
 }

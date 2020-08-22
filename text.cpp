@@ -25,82 +25,35 @@ inline double calc_theta(const point& A, const point& B)
 bool text_object::overlaps_asterism(const position_t& on_pos) const
 {
 	// the asterism lines
-	point startPt, endPt, cornerPt;
-	double startAngle, endAngle, theta;
-	bool found;
+	size_t overlap_cnt = 0;
 
-	std::vector<asterism_line>::const_iterator linesIter = store->asterism_lines.begin();
-	while (linesIter != store->asterism_lines.end())
+	for (const auto& al: store->asterism_lines)
 	{
-		found = false;
-		if (linesIter->start_star->coord.conv2point() == bound_to)
+		// iterate through points on the line between the the two stars,
+		// and calc how many times those points fall into the text
+		dekart pt_dek(al.start_star->coord.conv2point().conv2dekart());
+		dekart end(al.end_star->coord.conv2point().conv2dekart());
+		point p;
+
+		const double llength = line_length(al.start_star->coord.conv2point(), al.end_star->coord.conv2point());
+		const double steps = llength / 0.2;
+		const double x_step = (end.x - pt_dek.x) / steps;
+		const double y_step = (end.y - pt_dek.y) / steps;
+
+		for (size_t s = 0; s < size_t(steps); s++)
 		{
-			found = true;
-			cornerPt = linesIter->end_star->coord.conv2point();
-		} else if (linesIter->end_star->coord.conv2point() == bound_to) {
-			found = true;
-			cornerPt = linesIter->start_star->coord.conv2point();
+			p = pt_dek.conv2polar();
+
+			if (is_in_angle(on_pos.left_down_bound.alpha, on_pos.right_up_bound.alpha, p.alpha)
+					&&  on_pos.left_down_bound.r > p.r && on_pos.right_up_bound.r < p.r)
+				++overlap_cnt;
+
+			pt_dek.x += x_step;
+			pt_dek.y += y_step;
 		}
-
-		if (found)
-		{
-			theta = calc_theta(bound_to, cornerPt);
-
-			switch (on_pos.position_code)
-			{
-			case position_code_e::right:
-				startPt = on_pos.left_down_bound;
-				endPt.alpha = on_pos.left_down_bound.alpha;
-				endPt.r = on_pos.right_up_bound.r;
-				break;
-			case position_code_e::left:
-				startPt = on_pos.right_up_bound;
-				endPt.alpha = on_pos.right_up_bound.alpha;
-				endPt.r = on_pos.left_down_bound.r;
-				break;
-			case position_code_e::up:
-				startPt.alpha = on_pos.right_up_bound.alpha;
-				startPt.r = on_pos.left_down_bound.r;
-				endPt = on_pos.left_down_bound;
-				break;
-			case position_code_e::down:
-				startPt.alpha = on_pos.left_down_bound.alpha;
-				startPt.r = on_pos.right_up_bound.r;
-				endPt = on_pos.right_up_bound;
-				break;
-			case position_code_e::right_up:
-				endPt.alpha = on_pos.left_down_bound.alpha;
-				endPt.r = on_pos.right_up_bound.r;
-				startPt.alpha = on_pos.right_up_bound.alpha;
-				startPt.r = on_pos.left_down_bound.r;
-				break;
-			case position_code_e::right_down:
-				startPt = on_pos.right_up_bound;
-				endPt = on_pos.left_down_bound;
-				break;
-			case position_code_e::left_up:
-				startPt = on_pos.left_down_bound;
-				endPt = on_pos.right_up_bound;
-				break;
-			case position_code_e::left_down:
-				startPt.alpha = on_pos.left_down_bound.alpha;
-				startPt.r = on_pos.right_up_bound.r;
-				endPt.alpha = on_pos.right_up_bound.alpha;
-				endPt.r = on_pos.left_down_bound.r;
-				break;
-			}
-
-			startAngle = calc_theta(bound_to, startPt);
-			endAngle = calc_theta(bound_to, endPt);
-
-			if (is_in_angle(startAngle, endAngle, theta))
-				return true;
-		}
-
-		++linesIter;
 	}
 
-	return false;
+	return overlap_cnt > 0;
 }
 
 bool text_object::overlaps_declination(const position_t& pos) const

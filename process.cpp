@@ -435,7 +435,7 @@ void process::stars()
 			break;
 
 		// we need the star only if it is in the map boundaries
-		if (is_in_map_boundaries()(s.coord))
+		if (is_in_map_boundaries(s.coord))
 			store->store_star(s);
 	}
 
@@ -830,13 +830,10 @@ struct normalize_designation
 	}
 };
 
-struct draw_asterism_line
+void draw_asterism_line(const asterism_line& al)
 {
-	void operator () (const asterism_line& al)
-	{
-		canvas->line(al.start_star->coord.conv2point(), al.end_star->coord.conv2point());
-	}
-};
+	canvas->line(al.start_star->coord.conv2point(), al.end_star->coord.conv2point());
+}
 
 void process::asterisms()
 {
@@ -949,7 +946,7 @@ void process::asterisms()
 		canvas->set_pen_direct(thin_dots);
 
 	// draw the lines
-	std::for_each(store->asterism_lines.begin(), store->asterism_lines.end(), draw_asterism_line());
+	std::for_each(store->asterism_lines.begin(), store->asterism_lines.end(), draw_asterism_line);
 }
 
 void process::fixed_texts()
@@ -1021,7 +1018,7 @@ void new_ngc(NGCObject& obj, const char* line)
 {
 	bool should_ignore = obj.decode(line);
 
-	if (!should_ignore  &&  obj.magnitude <= cfg->get_mag_limit(obj)  &&  is_in_map_boundaries()(obj.coord))
+	if (!should_ignore  &&  obj.magnitude <= cfg->get_mag_limit(obj)  &&  is_in_map_boundaries(obj.coord))
 	{
 		config::ngc_type dngc_type = cfg->draw_ngc_type();
 
@@ -1540,7 +1537,7 @@ void process::radiants()
 
 		rad.decode(radiant_line);
 
-		if (is_in_map_boundaries()(rad.coord))
+		if (is_in_map_boundaries(rad.coord))
 			store->radiants.push_back(rad);
 	}
 

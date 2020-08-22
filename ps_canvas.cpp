@@ -197,60 +197,6 @@ void post_script_canvas::draw(const custom_object& cu)
 	}
 }
 
-/*
-const double obj_circle = 0.2;
-
-void post_script_canvas::draw(const star& s)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(s.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-
-void post_script_canvas::draw(const galaxy& gal)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(gal.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-
-void post_script_canvas::draw(const globular_cluster& gc)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(gc.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-
-void post_script_canvas::draw(const open_cluster& oc)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(oc.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-
-void post_script_canvas::draw(const planetary_nebula& pn)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(pn.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-
-void post_script_canvas::draw(const nebula& n)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(n.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-
-void post_script_canvas::draw(const radiant& rad)
-{
-	// set the brush to black
-	set_color(black);
-	_ps_file << get_circle_path(rad.coord.conv2point(), obj_circle) << "fill" << endl;
-}
-*/
-
-
 void post_script_canvas::draw(const star& s)
 {
 	point position = s.coord.conv2point();
@@ -396,17 +342,6 @@ void post_script_canvas::draw(const globular_cluster& gc)
 		comment("globular cluster " + gc.messier_id);
 	else
 		comment("globular cluster " + gc.name);
-
-	/*
-    set_pen_direct(thin_dots);
-
-	_ps_file << "newpath " << gc.coord << " " << gc.diameter << " 0 180 arc ";
-	_ps_file << gc.coord << " " << gc.diameter << " 180 0 arc stroke" << std::endl;
-
-	// the dot in the middle
-	_ps_file << "newpath " << gc.coord << " " << gc.diameter / 5 << " 0 180 arc ";
-	_ps_file << gc.coord << " " << gc.diameter / 5 << " 180 0 arc closepath fill" << std::endl;
-	*/
 
 	set_pen_direct(thin_solid);
 

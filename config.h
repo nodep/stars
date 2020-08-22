@@ -41,7 +41,6 @@ public:
 private:
 	// overall
 	bool							_draw_text_frame;
-	debug_region					_debug_region;
 	std::pair<double, double>		_RA_range;
 	std::pair<double, double>		_Dec_range;
 
@@ -182,7 +181,6 @@ public:
 
 	// overall stuff
 	bool draw_text_frame() const							{ return _draw_text_frame; }
-	debug_region get_debug_region() const					{ return _debug_region; }
 	const std::pair<double, double>& get_ra_range() const	{ return _RA_range; }
 	const std::pair<double, double>& get_dec_range() const	{ return _Dec_range; }
 

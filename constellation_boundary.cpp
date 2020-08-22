@@ -91,7 +91,7 @@ void constellation_boundary::add(const std::string& start_point, const std::stri
 		throw "internal error: can't determine constellation_boundary_line::is_line";
 
 	// check if the line is farther from the pole than allowed
-	if (!is_in_map_boundaries()(cons_line.start)  &&  !is_in_map_boundaries()(cons_line.end))
+	if (!is_in_map_boundaries(cons_line.start)  &&  !is_in_map_boundaries(cons_line.end))
 		return;
 
 	// check if we have this line in another constellation

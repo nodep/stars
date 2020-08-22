@@ -8,7 +8,7 @@
 
 point coordinate::conv2point() const
 {
-	return point(	calc_pole_distance()(*this) * canvas->get_extent() / cfg->get_max_pole_distance(),
+	return point(	calc_pole_distance(*this) * canvas->get_extent() / cfg->get_max_pole_distance(),
 					hour2rad(alpha));
 }
 

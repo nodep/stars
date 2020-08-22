@@ -2,9 +2,8 @@
 
 #include "dekart.h"
 
-class point
+struct point
 {
-public:
 	double	r;
 	double	alpha;
 

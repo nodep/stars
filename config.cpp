@@ -33,13 +33,6 @@ void config::parse_file(const char* file_name)
 			if (index != std::string::npos)
 				line = line.substr(0, index);
 
-			/*
-			// kill everything after the first white space
-			index = line.find_first_of(" \t");
-			if (index != std::string::npos)
-				line = line.substr(0, index);
-			*/
-
 			index = line.find('=');
 			if (index != std::string::npos)
 			{
@@ -61,25 +54,11 @@ void config::parse_file(const char* file_name)
 			} else if (var_name == "DBGTextFrame") {
 				_draw_text_frame = (value == "1");
 			} else if (var_name == "DBGRegion") {
-				if (value == "ALL")
-				{
-					_debug_region = dr_all;
-				} else if (value == "ORION") {
-					_debug_region = dr_orion;
-				} else if (value == "ORIONS_BELT") {
-					_debug_region = dr_orions_belt;
-				} else if (value == "COMMA_BERENICES") {
-					_debug_region = dr_comma_berenices;
-				} else if (value == "CYGNUS") {
-					_debug_region = dr_cygnus;
-				} else {
-					std::stringstream ss(value);
-					_debug_region = dr_custom;
-					ss >> _RA_range.first;
-					ss >> _RA_range.second;
-					ss >> _Dec_range.first;
-					ss >> _Dec_range.second;
-				}
+				std::stringstream ss(value);
+				ss >> _RA_range.first;
+				ss >> _RA_range.second;
+				ss >> _Dec_range.first;
+				ss >> _Dec_range.second;
 			} else if (var_name == "MapRadius") {
 				_map_radius = atof(value.c_str());
 			} else if (var_name == "SpareSpace") {

@@ -1,5 +1,7 @@
 #pragma once
 
+struct point;
+
 struct dekart
 {
 	double	x;
@@ -18,6 +20,8 @@ struct dekart
 	{
 		return dekart(x - rhs.x, y - rhs.y);
 	}
+
+	point conv2polar() const;
 };
 
 inline std::ostream& operator << (std::ostream& o, const dekart& d)

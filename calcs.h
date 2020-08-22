@@ -64,14 +64,14 @@ inline double correct_angle(const double angle)
 // checks if the given angle is between two other angles
 inline bool is_in_angle(const double start, const double end, const double check)
 {
-	double inStart = correct_angle(start);
-	double inEnd = correct_angle(end);
-	double inCheck = correct_angle(check);
+	const double inStart = correct_angle(start);
+	const double inEnd = correct_angle(end);
+	const double inCheck = correct_angle(check);
 
 	if (inStart < inEnd)
-		return (inCheck >= inStart  &&  inCheck <= inEnd);
+		return inCheck >= inStart  &&  inCheck <= inEnd;
 
-	return (inCheck >= inStart  ||  inCheck <= inEnd);
+	return inCheck >= inStart  ||  inCheck <= inEnd;
 } 
 
 inline bool is_in_radius(const double start, const double end, const double check)
@@ -132,97 +132,9 @@ struct polar_transform
 };
 */
 
-struct calc_pole_distance
+inline double calc_pole_distance(const coordinate& c)
 {
-	typedef double				result_type;
-	typedef const coordinate	argument_type;
+	return cfg->is_north() ? 90.0 - c.delta : 90.0 + c.delta;
+}
 
-	result_type operator() (argument_type& c) const
-	{
-		return cfg->is_north() ? 90.0 - c.delta : 90.0 + c.delta;
-	}
-};
-
-struct is_in_orions_belt
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const
-	{
-		return c.alpha < 5.75 && c.alpha > 5.5  &&  c.delta > -3  &&  c.delta < 0;
-	}
-};
-
-struct is_in_orion
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const
-	{
-		return c.alpha < 6 && c.alpha > 5.15  &&  c.delta > -10  &&  c.delta < 10;
-	}
-};
-
-struct is_in_orions_sword
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const
-	{
-		return c.alpha < 5.75 && c.alpha > 5.5  &&  c.delta > -10  &&  c.delta < -4;
-	}
-};
-
-struct is_in_comma_berenices
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const
-	{
-		return c.alpha < 19 && c.alpha > 20  &&  c.delta > 10  &&  c.delta < 20;
-	}
-};
-
-struct is_in_cygnus
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const
-	{
-		return c.alpha < 13 && c.alpha > 12  &&  c.delta > 20  &&  c.delta < 50;
-	}
-};
-
-struct is_in_custom
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const;
-};
-
-struct is_in_map_boundaries
-{
-	typedef bool				result_type;
-	typedef const coordinate	argument_type;
-
-	bool operator () (argument_type& c) const
-	{
-		switch (cfg->get_debug_region())
-		{
-		case config::dr_all:				return calc_pole_distance()(c) < cfg->get_max_pole_distance();
-		case config::dr_orion:				return is_in_orion()(c);
-		case config::dr_orions_belt:		return is_in_orions_belt()(c);
-		case config::dr_comma_berenices:	return is_in_comma_berenices()(c);
-		case config::dr_cygnus:				return is_in_cygnus()(c);
-		case config::dr_custom:				return is_in_custom()(c);
-		}
-
-		return false;
-	}
-};
+bool is_in_map_boundaries(const coordinate& c);
