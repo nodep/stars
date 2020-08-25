@@ -123,30 +123,14 @@ struct storage
 
 	bool text_overlaps_object(text_object& text, const text_object::position_t& vp);
 
-	std::vector<text_object>::iterator get_overlapping_text(const text_object& text)
+	bool text_overlaps_text(const text_object::position_t& vp)
 	{
-		/*
-		std::vector<text_object>::iterator textsIter = texts.begin();
-		while (textsIter != texts.end())
+		for (const auto& mov_text : texts)
 		{
-			if (&text != &(*textsIter)  &&  overlap_text_text(text, *textsIter))
-				break;
-
-			++textsIter;
+			if (overlap_text_text(vp, mov_text.curr_pos()))
+				return true;
 		}
-		*/
 
-		return texts.end();
-	}
-};
-
-struct get_text_idx_t
-{
-	typedef const text_object	argument_type;
-	typedef size_t				result_type;
-
-	result_type operator () (argument_type& txt) const
-	{
-		return &txt - &store->texts.front();
+		return false;
 	}
 };

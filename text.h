@@ -42,59 +42,14 @@ private:
 
 public:
 
-	struct position_selector
-	{
-		text_object*							parent;
-		std::vector<position_t>::iterator		curr_pos;
+	std::string		text;					// the text
+	bool			is_greek;				// is the text in greek alphabet (Symbol font)
+	double			height;					// the size (height) of the text (descent + upcent)
 
-		explicit position_selector(text_object* p)
-			: parent(p), curr_pos(p->valid_positions.begin())
-		{}
-
-		position_selector(text_object* p, std::vector<position_t>::iterator& cp)
-			: parent(p), curr_pos(cp)
-		{}
-
-		bool operator == (const position_selector& rhs) const
-		{
-			return parent == rhs.parent && curr_pos == rhs.curr_pos;
-		}
-
-		bool operator != (const position_selector& rhs) const
-		{
-			return !(operator == (rhs));
-		}
-
-		position_selector begin()
-		{
-			return position_selector(parent);
-		}
-
-		position_selector end()
-		{
-			return position_selector(parent, parent->valid_positions.end());
-		}
-
-		const position_selector& operator* ()
-		{
-			return *this;
-		}
-
-		position_selector& operator ++ ()
-		{
-			++curr_pos;
-			return *this;
-		}
-	};
-
-	std::string				text;					// the text
-	bool					is_greek;				// is the text in greek alphabet (Symbol font)
-	double					height;					// the size (height) of the text (descent + upcent)
-
-	point					bound_to;				// the position that the text is bound to
-	double					bound_diameter;			// the diameter of the object (in mm)
-	bool					is_removed;				// is the text removed from the map?
-	bool					has_overlaps;			// if the text overlaps at least one other text
+	point			bound_to;				// the position that the text is bound to
+	double			bound_diameter;			// the diameter of the object (in mm)
+	bool			is_removed;				// is the text removed from the map?
+	bool			has_overlaps;			// if the text overlaps at least one other text
 
 	std::vector<position_t>	valid_positions;
 
@@ -137,7 +92,6 @@ public:
 		bound_diameter = (double) bound_to_obj.diameter;
 	}
 
-	//void set_position_direct(const point& p);
 	bool find_valid_positions();
 
 	void init_position(position_t& pos);

@@ -33,37 +33,5 @@ bool storage::text_overlaps_object(text_object& text, const text_object::positio
 	if (std::find_if(custom_objects.begin(), custom_objects.end(), [&](const auto& o) { return overlap_text_object(text, vp, o); }) != custom_objects.end())
 		return true;
 
-	/*
-	// quasars
-	vector<Quasar>::const_iterator quasarIter = _quasars.begin();
-	while (quasarIter != _quasars.end())
-	{
-		if (overlap_text_object(text, *quasarIter))
-			return true;
-
-		++quasarIter;
-	}
-
-	// x-ray sources
-	vector<XRaySource>::const_iterator xrayIter = _XRaySources.begin();
-	while (xrayIter != _XRaySources.end())
-	{
-		if (overlap_text_object(text, *xrayIter))
-			return true;
-
-		++xrayIter;
-	}
-
-	// check the fixed texts also
-	ConstTextIter fti = _fixedTexts.begin();
-	while (fti != _fixedTexts.end())
-	{
-		if (overlap_text_text(text, *fti))
-			return true;
-
-		++fti;
-	}
-	*/
-
 	return false;
 }

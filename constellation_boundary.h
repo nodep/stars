@@ -64,7 +64,7 @@ public:
 
 	void clear()
 	{
-		_code = "";
+		_code.clear();
 		_lines.clear();
 	}
 

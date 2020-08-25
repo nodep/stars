@@ -1,5 +1,3 @@
-// zaboravio sam supernove
-
 dot    2 06 00   64 49 00  1.2  S1181		// m 0 u maximumu sjaja
 none   5 34 30   22 01 00  1.2  S1054		// koordinate kao pulsar i krab maglina  m -6 u max sjaja
 dot    0 25 18   64 09 00  1.2  S1572		// m -4 max
@@ -10,7 +8,7 @@ dot   17 30 36  -21 29 00  1.2  S1604		// m -2.5 max
 dot   12 29 06    2 03 00  1.2  3c273		// m 12.6
 
 // Pulsar
-none  05 34 30   22 01 00  1.2  PSR J0534+2200
+dot   05 34 30   22 01 00  1.2  PSR J0534+2200
 
 // X izvor
 dot   19 58 24   35 12 00  1.2  Cyg X-1		// m 8.9

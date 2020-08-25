@@ -45,9 +45,6 @@
     <ClInclude Include="..\irregular_surface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\ngc.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -294,14 +294,4 @@ public:
 	double get_mag_limit(const planetary_nebula&) const		{ return _planetary_nebula_mag_limit; }
 	double get_min_diam(const planetary_nebula&) const		{ return _min_planetary_nebula_diam; }
 	double get_max_diam(const planetary_nebula&) const		{ return _max_planetary_nebula_diam; }
-
-	/*
-	bool							_draw_quasars;
-	double							_quasar_mag_limit;
-	double							_quasar_name_height;
-	double							_quasar_diameter;
-	bool							_draw_xray;
-	double							_xray_diameter;
-	double							_xray_name_height;
-	*/
 };

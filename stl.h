@@ -15,6 +15,7 @@
 #include <fstream>
 #include <sstream>
 
+#include <cstring>
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>

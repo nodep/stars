@@ -4,20 +4,6 @@
 #include "text.h"
 #include "colors.h"
 
-struct found_overlaps
-{
-	std::vector<text_object>::iterator		iter;
-	size_t									count;
-
-	found_overlaps()
-		: count(0)
-	{}
-
-	found_overlaps(const std::vector<text_object>::iterator i, const size_t c)
-		: iter(i), count(c)
-	{}
-};
-
 class process
 {
 private:

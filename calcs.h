@@ -9,7 +9,7 @@
 inline double hour2rad(const double hour)
 {
 	// right ascension goes clockwise only for the northern projections
-	double in_hour = (cfg->is_north() ? 24 - hour : hour);
+	const double in_hour = (cfg->is_north() ? 24 - hour : hour);
 	double ret_val = in_hour * pi / 12.0 - pi / 2.0;
 
 	if (ret_val > 2 * pi)
@@ -31,7 +31,7 @@ inline double rad2deg(const double rad)
 inline double rad2hour(const double rad)
 {
 	// right ascension goes clockwise only for the northern projections
-	double in_rad = (cfg->is_north() ? 2*pi - rad : rad);
+	const double in_rad = (cfg->is_north() ? 2*pi - rad : rad);
 	double ret_val = in_rad * 12.0 / pi - 6;
 
 	if (ret_val > 24.0)

@@ -104,7 +104,7 @@ void process::declination_numbers()
 	text_object::position_t& vp(txt.valid_positions.front());
 
 	point text_pos;
-	double text_dist = txt.height / 3;
+	const double text_dist = txt.height / 3;
 
 	int numbers = 80;
 	for (double dec = DEC_STEP; dec < cfg->get_max_pole_distance(); dec += DEC_STEP)
@@ -120,11 +120,9 @@ void process::declination_numbers()
 		txt.text = buff;
 		vp.set_direct(text_pos, txt);
 
-		// see if the text overlaps any other text
-		if (!store->text_overlaps_object(txt, vp) && store->get_overlapping_text(txt) == store->texts.end())
-		{
+		// see if the text overlaps an object or a moveable text
+		if (!store->text_overlaps_object(txt, vp)  &&  !store->text_overlaps_text(vp))
 			txt.print();
-		}
 	}
 }
 
@@ -179,10 +177,7 @@ void process::run()
 	}
 
 	if (cfg->draw_net())
-	{
-		// the declination numbers
 		declination_numbers();
-	}
 
 	canvas->end_drawing();
 
@@ -933,7 +928,7 @@ void process::asterisms()
 		if (as_line.end_star == 0)
 			log_stream << "<!warning!>Designation for star <" << as_line.end_desgn << "> is not found.\n";
 
-		if (!asterism_line::is_valid()(as_line))
+		if (!as_line.is_valid())
 			store->asterism_lines.erase(store->asterism_lines.begin() + c);
 		else
 			++c;

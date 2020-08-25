@@ -158,7 +158,6 @@
     <ClInclude Include="..\dekart.h" />
     <ClInclude Include="..\functors.h" />
     <ClInclude Include="..\irregular_surface.h" />
-    <ClInclude Include="..\matrix.h" />
     <ClInclude Include="..\ngc.h" />
     <ClInclude Include="..\pi.h" />
     <ClInclude Include="..\point.h" />

@@ -12,6 +12,5 @@ struct custom_object
 		: diameter(1.5)
 	{}
 
-
 	static custom_object import(const std::string& in);
 };
