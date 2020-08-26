@@ -14,37 +14,37 @@ bool _overlap_text_object(const text_object& text, const text_object::position_t
 	const point& textRU = vp.right_up_bound;
 
 	// if the circle's center (R) is inside the text
-	bool isInR = is_in_radius(textRU.r, textLD.r, obj_pos.r);
+	const bool isInR = is_in_radius(textRU.r, textLD.r, obj_pos.r);
 
 	// if the circle's center (Alpha) is inside the text
-	bool isInAlpha = is_in_angle(textLD.alpha, textRU.alpha, obj_pos.alpha);
+	const bool isInAlpha = is_in_angle(textLD.alpha, textRU.alpha, obj_pos.alpha);
 
 	// is the center of the circle inside the text?
 	if (isInR  &&  isInAlpha)
 		return true;
 
 	// if the circle is under the text and overlaps it
-	bool isInUnder = is_in_radius(obj_pos.r, obj_pos.r + diameter, textRU.r);
+	const bool isInUnder = is_in_radius(obj_pos.r, obj_pos.r + diameter, textRU.r);
 
 	// if the circle overlaps the text -- under
 	if (isInAlpha && isInUnder)
 		return true;
 
 	// if the circle is over the text and overlaps it
-	bool isInOver = is_in_radius(obj_pos.r - diameter, obj_pos.r, textLD.r);
+	const bool isInOver = is_in_radius(obj_pos.r - diameter, obj_pos.r, textLD.r);
 
 	// if the circle overlaps the text -- over
 	if (isInAlpha  &&  isInOver)
 		return true;
 
 	// if the circle overlaps the text at the text's start
-	bool isInStart = is_in_angle(obj_pos.alpha - cut_angle(diameter, obj_pos.r), obj_pos.alpha, textRU.alpha);
+	const bool isInStart = is_in_angle(obj_pos.alpha - cut_angle(diameter, obj_pos.r), obj_pos.alpha, textRU.alpha);
 
 	// if the circle overlaps the text -- start of text
 	if (isInR && isInStart)
 		return true;
 
-	bool isInEnd = is_in_angle(obj_pos.alpha, obj_pos.alpha + cut_angle(diameter, obj_pos.r), textLD.alpha);
+	const bool isInEnd = is_in_angle(obj_pos.alpha, obj_pos.alpha + cut_angle(diameter, obj_pos.r), textLD.alpha);
 
 	// if the circle overlaps the text -- end of text
 	if (isInR   &&   isInEnd)

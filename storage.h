@@ -14,7 +14,7 @@ struct storage;
 
 extern storage* store;
 
-// all the objects on the map are embeded in this object
+// all the objects on the map are embedded in this object
 struct storage
 {
 	std::vector<star>					stars;

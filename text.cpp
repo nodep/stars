@@ -398,7 +398,7 @@ log_t& operator << (log_t& o, const text_object& t)
 {
 	static char row[1000];
 
-	sprintf_s(row, sizeof(row), "%5i %c [%-4s]  pos(alpha, r)=(%7.3f, %6.4f)",
+	snprintf(row, sizeof(row), "%5i %c [%-4s]  pos(alpha, r)=(%7.3f, %6.4f)",
 						int(&t - &store->texts.front()),
 						t.is_greek ? 'G' : ' ',
 						t.text.c_str(),
@@ -448,7 +448,7 @@ log_t& operator << (log_t& o, const overlap_t& ovp)
 
 	static char row[1000];
 
-	sprintf_s(row, sizeof(row), "%s->%s %s->%s",
+	snprintf(row, sizeof(row), "%s->%s %s->%s",
 								t1.text.c_str(), pos_name(t1.valid_positions[ovp.pos1].position_code),
 								t2.text.c_str(), pos_name(t2.valid_positions[ovp.pos2].position_code));
 

@@ -176,6 +176,7 @@
     <ClCompile Include="..\coordinate.cpp" />
     <ClCompile Include="..\custom_objects.cpp" />
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\ngc.cpp" />
     <ClCompile Include="..\process.cpp" />
     <ClCompile Include="..\ps_canvas.cpp" />
     <ClCompile Include="..\star.cpp" />

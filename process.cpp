@@ -76,7 +76,6 @@ void process::coordinate_net()
 	canvas->comment("right ascension values");
 
 	// print the values of RA
-	char tmp_txt[5];
 	text_object txt;
 	txt.valid_positions.push_back(text_object::position_t());
 	double chr_angle = char_angle('0', cfg->get_ra_text_height(), canvas->get_extent() + 1, false);
@@ -84,11 +83,10 @@ void process::coordinate_net()
 	for (hour = 0; hour < 24; ++hour)
 	{
 		// the number to print
-		sprintf_s(tmp_txt, sizeof(tmp_txt), "%i", hour);
-
-		txt.text = tmp_txt;
+		txt.text = std::to_string(hour);
 		txt.height = cfg->get_ra_text_height();
-		txt.valid_positions.back().set_direct(point(canvas->get_extent() + cfg->get_ra_text_height() + 1, hour2rad(hour) - (hour > 9 ? chr_angle : chr_angle / 2)), txt);
+        point pt(canvas->get_extent() + cfg->get_ra_text_height() + 1, hour2rad(hour) - (hour > 9 ? chr_angle : chr_angle / 2));
+		txt.valid_positions.back().set_direct(pt, txt);
 
 		// print the text
 		txt.print();
@@ -112,12 +110,9 @@ void process::declination_numbers()
 		text_pos.r = dec * canvas->get_extent() / cfg->get_max_pole_distance() + txt.height + text_dist;
 		text_pos.alpha = 3*pi/2 + cut_angle(text_dist, text_pos.r);
 
-		char buff[10];
-		sprintf_s(buff, sizeof(buff), "%i ", numbers);	// degree sign
-
 		numbers -= 10;
 
-		txt.text = buff;
+		txt.text = std::to_string(numbers) + " ";
 		vp.set_direct(text_pos, txt);
 
 		// see if the text overlaps an object or a moveable text
@@ -1176,8 +1171,8 @@ void process::init_text_positions()
 	stopwatch_t swatch;
 	swatch.start();
 
-	log_stream << "initializing text positions...\n";
-	log_stream << "total moveable texts on map: " << store->texts.size() << "\n";
+	log_stream << "initializing possible text positions...\n";
+	log_stream << "total movable texts on map: " << store->texts.size() << "\n";
 
 	// iterate through all the text and find their valid positions
 	size_t cnt = 0;
@@ -1207,7 +1202,7 @@ namespace std
 	{
 		std::size_t operator()(overlap_t const& o) const noexcept
 		{
-			return (o.txt1 << 48) | (o.pos1 << 32) | (o.txt2 << 16) | o.txt2;
+			return (o.txt1 << 19) | (o.pos1 << 16) | (o.txt2 << 13) | o.pos2;
 		}
 	};
 }
@@ -1228,13 +1223,12 @@ void process::find_text_positions()
 	std::unordered_set<overlap_t> overlaps_set;
 	std::vector<group_t> groups;
 
-	// iterate through every pair of texts on the map, and build hash tables of overlapping texts,
-	// and groups of mutually overlapping texts
+	// iterate through every pair of texts on the map, and build hash tables of overlapping
+	// texts and groups of mutually overlapping texts
 	for (auto out_iter = store->texts.begin(); out_iter != store->texts.end(); out_iter++)
 	{
 		for (auto in_iter = out_iter + 1; in_iter != store->texts.end(); in_iter++)
 		{
-			//log_stream << "? " << out_iter->text << " " << in_iter->text << "\n";
 			// iterate through all the positions for these two texts
 			bool found = false;
 			for (auto& out_vp: out_iter->valid_positions)
@@ -1243,8 +1237,6 @@ void process::find_text_positions()
 				{
 					if (overlap_text_text(out_vp, in_vp))
 					{
-						//log_stream << "! ovp " << overlap_t(*out_iter, out_vp, *in_iter, in_vp) << "\n";
-
 						// we don't know in which order the overlap_t is going to be initialized:
 						// txt1, txt2   or   txt2, txt1
 						// so add for both combinations
@@ -1260,29 +1252,21 @@ void process::find_text_positions()
 
 			if (found)
 			{
-				//log_stream << "* current groups:\n";
-				//for (const auto& grp : groups)			log_stream << grp;
-
 				int64_t out_group = -1;
 				int64_t in_group = -1;
 				for (auto& grp : groups)
 				{
-					//log_stream << "^ checking group:\n" << grp;
 					for (const auto& gtxt : grp)
 					{
-						//log_stream << ": " << *gtxt << "\n";
-						
 						if (gtxt == out_iter)
 						{
 							assert(out_group == -1);
-							//log_stream << "$ found out " << *gtxt << "\n";
 							out_group = &grp - &groups.front();
 						}
 
 						if (gtxt == in_iter)
 						{
 							assert(in_group == -1);
-							//log_stream << "$ found in  " << *gtxt << "\n";
 							in_group = &grp - &groups.front();
 						}
 					}
@@ -1291,32 +1275,25 @@ void process::find_text_positions()
 				if (out_group == -1  &&  in_group == -1)
 				{
 					groups.push_back({ out_iter, in_iter });
-					//log_stream << ". created group ID " << groups.size() << "\n" << groups.back();
 				}
 				else if (out_group != -1 && in_group != -1  &&  in_group != out_group)
 				{
 					assert(out_group != in_group);
 
-					//log_stream << ". joining group ID " << out_group << "\n" << groups[out_group];
-					//log_stream << ". and group ID " << in_group << "\n" << groups[in_group];
-
 					// join groups
 					for (const auto& txt_iter : groups[in_group])
 						groups[out_group].push_back(txt_iter);
 
-					groups[in_group].clear();
-
-					//log_stream << ". giving\n" << groups[out_group];
+                    // erase the second group
+					groups.erase(groups.begin() + in_group);
 				}
 				else if (out_group == -1)
 				{
 					groups[in_group].push_back(out_iter);
-					//log_stream << ". added " << *out_iter << " to group ID " << in_group << "\n" << groups[in_group];
 				}
 				else if (in_group == -1)
 				{
 					groups[out_group].push_back(in_iter);
-					//log_stream << ". added " << *in_iter << " to group ID " << out_group << "\n" << groups[out_group];
 				}
 			}
 		}
@@ -1340,10 +1317,7 @@ void process::find_text_positions()
 		}
 	}
 
-	for (const auto& grp : groups)
-		log_stream << grp;
-
-	// remove positions which are perfect and don't overlap others in it (TODO)
+	// remove positions which have a grade == 0 and don't overlap others in it (TODO)
 	/*
 	for (auto& grp : groups)
 	{
@@ -1360,26 +1334,20 @@ void process::find_text_positions()
 	}
 	*/
 
-	log_stream << "********************************************\n";
-	log_stream << "********************************************\n";
-	log_stream << "********************************************\n";
-
 	for (auto& grp : groups)
 	{
-		if (grp.empty())
-			continue;
+        assert(!grp.empty());
 
+        log_stream << "finding best positions for group:\n" << grp;
+        
 		std::vector<std::vector<uint8_t>> combinations;
 		std::vector<size_t> grades;
-
-		log_stream << "-----------------------------\n" << grp;
 
 		size_t n = 0;
 		for (auto& txt_iter : grp)
 		{
 			const size_t chk_ndx = &*txt_iter - &store->texts.front();
 
-			log_stream << "text " << n++ << " valids " << txt_iter->valid_positions.size() << '\n';
 			if (combinations.empty())
 			{
 				for (uint8_t pos = 0; pos < txt_iter->valid_positions.size(); pos++)
@@ -1423,11 +1391,11 @@ void process::find_text_positions()
 					}
 				}
 
-				log_stream << "combinations " << new_combs.size() << "\n";
-
 				// prune?
 				if (new_combs.size() > PRUNING_LIMIT)
 				{
+                    log_stream << "pruning from " << new_combs.size() << " combinations;";
+
 					// calc grades range
 					size_t max = new_grades[0], min = new_grades[0];
 					for (size_t g : new_grades)
@@ -1435,8 +1403,8 @@ void process::find_text_positions()
 						if (max < g)	max = g;
 						if (min > g)	min = g;
 					}
-
-					log_stream << "  - min " << min << " max " << max << "\n";
+                    
+                    log_stream << " min grade: " << min << "; max grade: " << max;
 
 					// calc grades distribution
 					std::vector<size_t> grd_by_val(max + 1, 0);
@@ -1451,7 +1419,6 @@ void process::find_text_positions()
 					size_t count_summ = 0;
 					for (size_t& c : grd_by_val)
 					{
-						//log_stream << "  - count_summ " << count_summ << "\n";
 						if (count_summ <= PRUNING_LIMIT && count_summ + c > PRUNING_LIMIT)
 						{
 							partition_grade = &c - &grd_by_val.front();
@@ -1460,9 +1427,9 @@ void process::find_text_positions()
 						count_summ += c;
 					}
 
-					assert(partition_grade >= min);
+                    log_stream << "; split grade: " << partition_grade;
 
-					log_stream << "  - prunining grade " << partition_grade << "\n";
+					assert(partition_grade >= min);
 
 					// now copy the new combinations and grades but only the ones better than partition_grade
 					combinations.clear();
@@ -1478,7 +1445,7 @@ void process::find_text_positions()
 
 					assert(combinations.size());
 
-					log_stream << "  - pruned down to " << combinations.size() << "\n";
+					log_stream << "; new elements " << combinations.size() << "\n";
 				}
 				else
 				{
