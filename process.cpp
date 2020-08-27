@@ -1202,7 +1202,7 @@ namespace std
 	{
 		std::size_t operator()(overlap_t const& o) const noexcept
 		{
-			return (o.txt1 << 19) | (o.pos1 << 16) | (o.txt2 << 13) | o.pos2;
+			return (o.txt1 << 19) | (o.pos1 << 16) | (o.txt2 << 3) | o.pos2;
 		}
 	};
 }
