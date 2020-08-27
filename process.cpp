@@ -1242,7 +1242,8 @@ void process::find_text_positions()
 						// so add for both combinations
 						overlaps_set.insert(overlap_t(*out_iter, out_vp, *in_iter, in_vp));
 						overlaps_set.insert(overlap_t(*in_iter, in_vp, *out_iter, out_vp));
-
+                        
+                        in_vp.has_overlaps = out_vp.has_overlaps = true;
 						out_iter->has_overlaps = in_iter->has_overlaps = true;
 
 						found = true;
@@ -1252,8 +1253,8 @@ void process::find_text_positions()
 
 			if (found)
 			{
-				int64_t out_group = -1;
-				int64_t in_group = -1;
+				int out_group = -1;
+				int in_group = -1;
 				for (auto& grp : groups)
 				{
 					for (const auto& gtxt : grp)
@@ -1317,26 +1318,40 @@ void process::find_text_positions()
 		}
 	}
 
-	// remove positions which have a grade == 0 and don't overlap others in it (TODO)
-	/*
+    // remove texts where a position with the best grade doesn't overlap others
 	for (auto& grp : groups)
 	{
-		group_t new_grp;
-		for (auto& txt_iter : grp)
+        group_t::iterator ti = grp.begin();
+        while (ti != grp.end())
 		{
-			overlap_t o(&*txt_iter - &store->texts.front(), 0,
-						0, 0);
-			if (txt_iter->valid_positions.front().grade == 0)
+            std::vector<text_object>::iterator& txt_iter = *ti;
+            
+            size_t best_pos = 0;
+			for (auto& vp: txt_iter->valid_positions)
 			{
-				o.
+                if (txt_iter->valid_positions[best_pos].grade > vp.grade)
+                    best_pos = &vp - &txt_iter->valid_positions.front();
 			}
+            
+            if (!txt_iter->valid_positions[best_pos].has_overlaps)
+            {
+                // set the position and remove text
+                if (best_pos > 0)
+                    txt_iter->valid_positions[0] = txt_iter->valid_positions[best_pos];
+                    
+                grp.erase(ti);
+            }
+            else
+            {
+                ++ti;
+            }
 		}
 	}
-	*/
-
+    
 	for (auto& grp : groups)
 	{
-        assert(!grp.empty());
+        if (grp.empty())
+            continue;
 
         log_stream << "finding best positions for group:\n" << grp;
         

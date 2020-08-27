@@ -381,6 +381,7 @@ bool text_object::find_valid_positions()
 		grade += (size_t)curr_pos_code;
 
 		vp.grade = grade;
+        vp.has_overlaps = false;
 
 		valid_positions.push_back(vp);
 	}

@@ -19,6 +19,7 @@ public:
 		bool				overlaps[overlap_count];
 		double				angle;				// the text angle in this position
 		size_t				grade;				// the grade of the position (overlaps with map elements)
+        bool                has_overlaps;
 
 		void set_direct(point& p, text_object& txt)
 		{
