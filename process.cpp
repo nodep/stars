@@ -110,10 +110,10 @@ void process::declination_numbers()
 		text_pos.r = dec * canvas->get_extent() / cfg->get_max_pole_distance() + txt.height + text_dist;
 		text_pos.alpha = 3*pi/2 + cut_angle(text_dist, text_pos.r);
 
-		numbers -= 10;
-
 		txt.text = std::to_string(numbers) + "Ê";
 		vp.set_direct(text_pos, txt);
+
+		numbers -= 10;
 
 		// see if the text overlaps an object or a moveable text
 		if (!store->text_overlaps_object(txt, vp)  &&  !store->text_overlaps_text(vp))
@@ -1253,8 +1253,8 @@ void process::find_text_positions()
 
 			if (found)
 			{
-				int out_group = -1;
-				int in_group = -1;
+				size_t out_group = -1;
+				size_t in_group = -1;
 				for (auto& grp : groups)
 				{
 					for (const auto& gtxt : grp)
