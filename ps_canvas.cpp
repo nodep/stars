@@ -730,3 +730,20 @@ void post_script_canvas::clip_restore()
 	// restore the saved clipping path
 	_ps_file << "cliprestore" << std::endl;
 }
+
+void post_script_canvas::add_raw_ps()
+{
+	const std::string ps_file_name = cfg->read_str("AdditionalPS");
+	if (!ps_file_name.empty())
+	{
+		log_stream << "adding contents of " << ps_file_name << " to canvas\n";
+
+		std::ifstream ps_file(ps_file_name);
+		std::string raw_ps((std::istreambuf_iterator<char>(ps_file)),
+			std::istreambuf_iterator<char>());
+
+		_ps_file << "\n% additional PS file: " << ps_file_name << "\n\n";
+		_ps_file << raw_ps << "\n\n";
+		_ps_file << "% additional PS ended\n";
+	}
+}

@@ -174,6 +174,8 @@ void process::run()
 	if (cfg->draw_net())
 		declination_numbers();
 
+	canvas->add_raw_ps();
+
 	canvas->end_drawing();
 
 	log_stream << "Total time taken: " << swatch.get_msec() / 1000.0 << "sec\n";
@@ -1321,10 +1323,12 @@ void process::find_text_positions()
     // remove texts where a position with the best grade doesn't overlap others
 	for (auto& grp : groups)
 	{
-        group_t::iterator ti = grp.begin();
-        while (ti != grp.end())
+		log_stream << "optimizing group:\n" << grp;
+
+		size_t txt_ndx = 0;
+		while (txt_ndx < grp.size())
 		{
-            std::vector<text_object>::iterator& txt_iter = *ti;
+            std::vector<text_object>::iterator& txt_iter = grp[txt_ndx];
             
             size_t best_pos = 0;
 			for (auto& vp: txt_iter->valid_positions)
@@ -1333,18 +1337,19 @@ void process::find_text_positions()
                     best_pos = &vp - &txt_iter->valid_positions.front();
 			}
             
-            if (!txt_iter->valid_positions[best_pos].has_overlaps)
+            if (!txt_iter->valid_positions[best_pos].has_overlaps  ||  grp.size() == 1)
             {
                 // set the position and remove text
                 if (best_pos > 0)
                     txt_iter->valid_positions[0] = txt_iter->valid_positions[best_pos];
                     
-                grp.erase(ti);
-            }
-            else
-            {
-                ++ti;
-            }
+				log_stream << "erasing text " << *txt_iter << " from group\n";
+				grp.erase(grp.begin() + txt_ndx);
+			}
+			else
+			{
+				++txt_ndx;
+			}
 		}
 	}
     

@@ -15,6 +15,8 @@ void config::parse_file(const char* file_name)
 	} else {
 		log_stream << "reading config file <" << file_name << '>' << "\n";
 
+		_file_name = file_name;
+
 		std::string line, var_name, value;
 		size_t index;
 		char p[150];
@@ -470,4 +472,27 @@ void config::_set_to_default()
 	_draw_xray = true;
 	_xray_diameter = 1.7;
 	_xray_name_height = 0.8;
+}
+
+std::string config::read_str(const char* name) const
+{
+	std::ifstream cfg_file(_file_name);
+	std::string config_str((std::istreambuf_iterator<char>(cfg_file)),
+							std::istreambuf_iterator<char>());
+
+	const size_t row_index = config_str.find(std::string("\n") + name);
+	if (row_index != std::string::npos)
+	{
+		const size_t value_index = config_str.find('=', row_index);
+		if (value_index != std::string::npos)
+		{
+			size_t value_end_index = config_str.find('\n', value_index);
+			if (value_end_index == std::string::npos)
+				value_end_index = config_str.size();
+
+			return alltrim(config_str.substr(value_index + 1, value_end_index - value_index));
+		}
+	}
+
+	return "";
 }

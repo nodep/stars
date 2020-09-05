@@ -154,6 +154,8 @@ private:
 	double							_xray_diameter;
 	double							_xray_name_height;
 
+	std::string			_file_name;
+
 	void _set_to_default();
 	void _read_ar_file(double ar_array[256], const std::string& font_name);
 
@@ -183,6 +185,8 @@ public:
 	bool draw_text_frame() const							{ return _draw_text_frame; }
 	const std::pair<double, double>& get_ra_range() const	{ return _RA_range; }
 	const std::pair<double, double>& get_dec_range() const	{ return _Dec_range; }
+
+	std::string read_str(const char* name) const;
 
 	std::string get_output_file_name() const				{ return _output_file_name; }
 	double get_circle_dots_frequency() const				{ return _circle_dots_frequency; }

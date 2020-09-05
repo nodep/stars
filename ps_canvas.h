@@ -75,6 +75,8 @@ public:
 
 	void draw(const text_object&);
 
+	void add_raw_ps();
+
 	void clip_extent();
 	void clip_restore();
 
